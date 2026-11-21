@@ -1,1 +1,38 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
+
+@theme {
+  /* Colores de Marca (Primary) */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+
+  /* Colores de Superficie (Backgrounds y Cards) */
+  --color-surface-50: #f8fafc;   /* Fondo claro */
+  --color-surface-100: #f1f5f9; 
+  --color-surface-800: #1e293b;  /* Fondo oscuro (Cards) */
+  --color-surface-900: #0f172a;  /* Fondo oscuro (Body) */
+  --color-surface-950: #020617;  /* Fondo oscuro profundo */
+
+  /* Colores de Texto */
+  --color-text-main: #1e293b;    /* Texto oscuro en modo claro */
+  --color-text-light: #f8fafc;   /* Texto claro en modo oscuro */
+  --color-text-muted: #64748b;   /* Texto secundario */
+
+  /* Colores de Acento/Estado */
+  --color-accent: #10b981;       /* Verde (Ã‰xito/Destacado) */
+  --color-danger: #ef4444;       /* Rojo (Errores/Eliminar) */
+}
+
+@layer base {
+  /* Configuración base para el body */
+  body {
+    @apply bg-surface-50 text-text-main transition-colors duration-300;
+  }
+  
+  /* Configuración para Modo Oscuro */
+  .dark body {
+    @apply bg-surface-900 text-text-light;
+  }
+}
