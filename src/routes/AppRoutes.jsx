@@ -2,23 +2,32 @@
 import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
 import { ProtectedRoute } from './ProtectedRoute';
+import { MainLayout } from '../components/layout/MainLayout';
 
 // Vistas temporales
-const HomeTemporal = () => <div className="p-8 text-2xl">Catálogo de Paquetes (Próximamente)</div>;
-const AdminTemporal = () => <div className="p-8 text-2xl">Panel de Administración (Próximamente)</div>;
+const HomeTemporal = () => <div className="text-2xl font-bold">Catálogo de Paquetes (Próximamente)</div>;
+const AdminTemporal = () => <div className="text-2xl font-bold">Panel de Administración (Próximamente)</div>;
 
 export const AppRoutes = () => {
   return (
     <Routes>
+      {/* Rutas Públicas (sin Layout) */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       
-      <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<HomeTemporal />} />
-      </Route>
+      {/* Rutas con Layout */}
+      <Route element={<MainLayout />}>
+        
+        {/* Rutas Protegidas (Cualquier usuario logueado) */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<HomeTemporal />} />
+        </Route>
 
-      <Route element={<ProtectedRoute adminOnly={true} />}>
-        <Route path="/admin" element={<AdminTemporal />} />
+        {/* Rutas Protegidas (Solo Admin) */}
+        <Route element={<ProtectedRoute adminOnly={true} />}>
+          <Route path="/admin" element={<AdminTemporal />} />
+        </Route>
+
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
