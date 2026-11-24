@@ -20,11 +20,11 @@ export const LoginPage = () => {
     setIsSubmitting(true);
     try {
       const res = await login(data);
-      toast.success(`Â¡Bienvenido/a, ${res.user.nombre}!`);
+      toast.success(`¡Bienvenido/a, ${res.user.nombre}!`);
       if (res.user.rol === 'admin') navigate('/admin');
       else navigate('/');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Error al iniciar sesiÃ³n');
+      toast.error(error.response?.data?.message || 'Error al iniciar sesión');
     } finally {
       setIsSubmitting(false);
     }
