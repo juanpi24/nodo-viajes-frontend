@@ -8,6 +8,7 @@ import {
   MapPin, Star, Heart, CloudSun, Thermometer, Wind, 
   ArrowLeft, CheckCircle2, AlertCircle 
 } from 'lucide-react';
+import { SafeImage } from '../components/packages/SafeImage';
 
 export const PackageDetailPage = () => {
   const { id } = useParams();
@@ -82,7 +83,16 @@ export const PackageDetailPage = () => {
         
         {/* Imagen Izquierda */}
         <div className="md:w-1/2 relative h-72 md:h-auto">
-          <img src={pkg.imagen} alt={pkg.titulo} className="w-full h-full object-cover" />
+          
+          <SafeImage
+          src={pkg.imagen} 
+          alt={pkg.titulo} 
+          lazy={false}
+          iconSize="w-14 h-14"
+          fallbackText="Imagen del paquete no disponible"
+          className="w-full h-full object-cover" 
+          />
+          
           {pkg.destacado && (
             <span className="absolute top-4 left-4 bg-accent text-white text-sm font-bold px-3 py-1.5 rounded-lg shadow-md">
               DESTACADO

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { favoriteApi } from '../../api/favoriteApi';
 import { toast } from 'react-toastify';
+import { SafeImage } from './SafeImage';
 
 export const PackageCard = ({ pkg, initialIsFav = false }) => {
   const { user } = useAuth();
@@ -50,9 +51,10 @@ export const PackageCard = ({ pkg, initialIsFav = false }) => {
     <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-surface-100 dark:border-surface-700 group flex flex-col">
       
       <div className="relative h-48 overflow-hidden">
-        <img 
+        <SafeImage 
           src={pkg.imagen} 
           alt={pkg.titulo} 
+          fallbackText="Imagen del paquete no disponible"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         {pkg.destacado && (
