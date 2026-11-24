@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useFavorites } from '../../context/FavoritesContext';
 import { toast } from 'react-toastify';
 import { SafeImage } from './SafeImage';
+import { formatearPrecio } from '../../utils/formato';
 
 export const PackageCard = ({ pkg }) => {
   const { user } = useAuth();
@@ -77,7 +78,7 @@ export const PackageCard = ({ pkg }) => {
           <div>
             <p className="text-xs text-text-muted mb-1">Precio por persona</p>
             <p className="text-xl font-bold text-primary-600 dark:text-primary-400">
-              ${pkg.precio.toLocaleString('es-AR')}
+              {formatearPrecio(pkg.precio)}
             </p>
           </div>
           <Link 

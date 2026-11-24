@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { SafeImage } from '../components/packages/SafeImage';
 import { useFavorites } from '../context/FavoritesContext';
+import { formatearPrecio } from '../utils/formato'; 
 
 export const PackageDetailPage = () => {
   const { id } = useParams();
@@ -139,7 +140,7 @@ export const PackageDetailPage = () => {
             <div>
               <p className="text-sm text-text-muted">Precio por persona</p>
               <p className="text-3xl font-bold text-primary-600 dark:text-primary-400">
-                ${pkg.precio.toLocaleString('es-AR')}
+                {formatearPrecio(pkg.precio)}
               </p>
             </div>
             
