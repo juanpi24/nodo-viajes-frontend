@@ -5,28 +5,28 @@ import { useState, useEffect } from 'react';
 
 export const Navbar = () => {
   const { user, logout } = useAuth();
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  return savedTheme === 'dark' || (!savedTheme && prefersDark);
+});
 
   // Lógica simple de Modo Oscuro (después la movemos a un Context)
   useEffect(() => {
-    const theme = localStorage.getItem('theme');
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      setIsDark(true);
-    }
-  }, []);
+  if (isDark) {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+}, [isDark]);
 
-  const toggleTheme = () => {
-    if (isDark) {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      setIsDark(false);
-    } else {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-      setIsDark(true);
-    }
-  };
+ const toggleTheme = () => {
+  setIsDark((prev) => {
+    const next = !prev;
+    localStorage.setItem('theme', next ? 'dark' : 'light');
+    return next;
+  });
+};
 
   const activeStyle = ({ isActive }) => 
     `font-medium transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-text-muted hover:text-primary-600 dark:hover:text-primary-400'}`;
