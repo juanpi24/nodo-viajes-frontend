@@ -89,7 +89,7 @@ export const RegisterPage = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-accent hover:bg-emerald-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+            className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
           >
             {isSubmitting ? 'Creando cuenta...' : (
               <><UserPlus className="w-5 h-5" /> Registrarse</>
