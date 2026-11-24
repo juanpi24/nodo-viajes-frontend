@@ -2,12 +2,15 @@
 
 export const packageApi = {
   getAll: async (params) => {
-    // params puede incluir: page, limit, search, categoria, etc.
     const { data } = await api.get('/packages', { params });
-    return data; // Devuelve { data: [...], meta: {...} }
+    return data;
   },
   getById: async (id) => {
     const { data } = await api.get(`/packages/${id}`);
     return data.data;
+  },
+  getWeather: async (id) => {
+    const { data } = await api.get(`/packages/${id}/weather`);
+    return data;
   }
 };

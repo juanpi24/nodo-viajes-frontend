@@ -2,6 +2,7 @@
 import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
 import { CatalogPage } from '../pages/CatalogPage';
+import { PackageDetailPage } from '../pages/PackageDetailPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { MainLayout } from '../components/layout/MainLayout';
 
@@ -16,6 +17,7 @@ export const AppRoutes = () => {
       <Route element={<MainLayout />}>
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<CatalogPage />} />
+          <Route path="/packages/:id" element={<PackageDetailPage />} />
         </Route>
 
         <Route element={<ProtectedRoute adminOnly={true} />}>
