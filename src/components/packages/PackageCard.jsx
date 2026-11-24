@@ -1,11 +1,54 @@
 ﻿import { MapPin, Star, Heart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { favoriteApi } from '../../api/favoriteApi';
+import { toast } from 'react-toastify';
 
-export const PackageCard = ({ pkg }) => {
+export const PackageCard = ({ pkg, initialIsFav = false }) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [isFavorite, setIsFavorite] = useState(initialIsFav);
+  const [loading, setLoading] = useState(false);
+
+  // Sincronizar si el padre cambia el estado
+  useEffect(() => {
+    setIsFavorite(initialIsFav);
+  }, [initialIsFav]);
+
+  const toggleFavorite = async (e) => {
+    e.preventDefault(); // Evita que se dispare el Link de la tarjeta
+    if (!user) {
+      toast.info('Inicia sesión para guardar favoritos');
+      navigate('/login');
+      return;
+    }
+    if (user.rol === 'admin') {
+      toast.info('Los administradores no tienen lista de favoritos');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if (isFavorite) {
+        await favoriteApi.remove(pkg._id);
+        setIsFavorite(false);
+        toast.success('Quitado de favoritos');
+      } else {
+        await favoriteApi.add(pkg._id);
+        setIsFavorite(true);
+        toast.success('Agregado a favoritos');
+      }
+    } catch {
+      toast.error('Error al actualizar favoritos');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-surface-100 dark:border-surface-700 group flex flex-col">
       
-      {/* Imagen y Badge */}
       <div className="relative h-48 overflow-hidden">
         <img 
           src={pkg.imagen} 
@@ -17,16 +60,21 @@ export const PackageCard = ({ pkg }) => {
             DESTACADO
           </span>
         )}
-        <button className="absolute top-3 right-3 p-2 bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-full text-text-muted hover:text-danger transition-colors">
-          <Heart className="w-5 h-5" />
+        <button 
+          onClick={toggleFavorite}
+          disabled={loading}
+          className={`absolute top-3 right-3 p-2 backdrop-blur-sm rounded-full transition-colors ${
+            isFavorite ? 'bg-red-50 text-red-500 dark:bg-red-900/30' : 'bg-white/80 dark:bg-surface-900/80 text-text-muted hover:text-danger'
+          }`}
+        >
+          <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
         </button>
       </div>
 
-      {/* Contenido */}
       <div className="p-5 flex flex-col grow">
         <div className="flex items-center gap-1 text-text-muted text-sm mb-2">
           <MapPin className="w-4 h-4" />
-          <span>{pkg.destino}</span> -  <span>{pkg.categoria}</span>
+          <span>{pkg.destino}</span>
         </div>
         
         <h3 className="text-lg font-bold text-text-main dark:text-white mb-2 line-clamp-2">

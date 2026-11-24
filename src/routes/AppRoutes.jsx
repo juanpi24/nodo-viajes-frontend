@@ -3,6 +3,7 @@ import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
 import { CatalogPage } from '../pages/CatalogPage';
 import { PackageDetailPage } from '../pages/PackageDetailPage';
+import { FavoritesPage } from '../pages/FavoritesPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { MainLayout } from '../components/layout/MainLayout';
 
@@ -15,11 +16,16 @@ export const AppRoutes = () => {
       <Route path="/register" element={<RegisterPage />} />
       
       <Route element={<MainLayout />}>
+        {/* Catálogo y Detalle son PÚBLICOS */}
+        <Route path="/" element={<CatalogPage />} />
+        <Route path="/packages/:id" element={<PackageDetailPage />} />
+
+        {/* Rutas Protegidas (Clientes) */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<CatalogPage />} />
-          <Route path="/packages/:id" element={<PackageDetailPage />} />
+          <Route path="/favoritos" element={<FavoritesPage />} />
         </Route>
 
+        {/* Rutas Protegidas (Admin) */}
         <Route element={<ProtectedRoute adminOnly={true} />}>
           <Route path="/admin" element={<AdminTemporal />} />
         </Route>
