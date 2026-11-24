@@ -1,33 +1,11 @@
-﻿import { useState, useEffect } from 'react';
-import { favoriteApi } from '../api/favoriteApi';
+﻿import { useFavorites } from '../context/FavoritesContext';
 import { PackageCard } from '../components/packages/PackageCard';
 import { Loader2, HeartOff } from 'lucide-react';
-import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
 
 export const FavoritesPage = () => {
-  const [favorites, setFavorites] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let isMounted = true; // Buena práctica para evitar fugas de memoria
-    
-    const loadFavorites = async () => {
-      try {
-        const data = await favoriteApi.getAll();
-        if (isMounted) setFavorites(data);
-      } catch {
-        if (isMounted) toast.error('Error al cargar tus favoritos');
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-
-    loadFavorites();
-
-    return () => {
-      isMounted = false; // Se ejecuta si el componente se desmonta antes de que termine la petición
-    };
-  }, []);
+  // Usamos el contexto global que creamos
+  const { favorites, loading } = useFavorites();
 
   // Muestra el spinner mientras carga
   if (loading) {
@@ -48,13 +26,16 @@ export const FavoritesPage = () => {
       </div>
 
       {favorites.length === 0 ? (
-        <div className="text-center py-20 bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700">
-          <p className="text-xl text-text-muted">Todavía no guardaste ningún paquete.</p>
+        <div className="text-center py-20 bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 flex flex-col items-center">
+          <p className="text-xl text-text-muted mb-6">Todavía no guardaste ningún paquete.</p>
+          <Link to="/" className="bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors">
+            Explorar paquetes
+          </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {favorites.map((pkg) => (
-            <PackageCard key={pkg._id} pkg={pkg} initialIsFav={true} />
+            <PackageCard key={pkg._id} pkg={pkg} />
           ))}
         </div>
       )}

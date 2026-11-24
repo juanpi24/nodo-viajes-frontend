@@ -1,24 +1,19 @@
 ﻿import { MapPin, Star, Heart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { favoriteApi } from '../../api/favoriteApi';
+import { useFavorites } from '../../context/FavoritesContext';
 import { toast } from 'react-toastify';
 import { SafeImage } from './SafeImage';
 
-export const PackageCard = ({ pkg, initialIsFav = false }) => {
+export const PackageCard = ({ pkg }) => {
   const { user } = useAuth();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const navigate = useNavigate();
-  const [isFavorite, setIsFavorite] = useState(initialIsFav);
-  const [loading, setLoading] = useState(false);
 
-  // Sincronizar si el padre cambia el estado
-  useEffect(() => {
-    setIsFavorite(initialIsFav);
-  }, [initialIsFav]);
+  const isFav = isFavorite(pkg._id);
 
-  const toggleFavorite = async (e) => {
-    e.preventDefault(); // Evita que se dispare el Link de la tarjeta
+  const handleToggleFavorite = async (e) => {
+    e.preventDefault();
     if (!user) {
       toast.info('Inicia sesión para guardar favoritos');
       navigate('/login');
@@ -29,21 +24,11 @@ export const PackageCard = ({ pkg, initialIsFav = false }) => {
       return;
     }
 
-    setLoading(true);
-    try {
-      if (isFavorite) {
-        await favoriteApi.remove(pkg._id);
-        setIsFavorite(false);
-        toast.success('Quitado de favoritos');
-      } else {
-        await favoriteApi.add(pkg._id);
-        setIsFavorite(true);
-        toast.success('Agregado a favoritos');
-      }
-    } catch {
+    const success = await toggleFavorite(pkg._id);
+    if (success) {
+      toast.success(isFav ? 'Quitado de favoritos' : 'Agregado a favoritos');
+    } else {
       toast.error('Error al actualizar favoritos');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -63,13 +48,12 @@ export const PackageCard = ({ pkg, initialIsFav = false }) => {
           </span>
         )}
         <button 
-          onClick={toggleFavorite}
-          disabled={loading}
+          onClick={handleToggleFavorite}
           className={`absolute top-3 right-3 p-2 backdrop-blur-sm rounded-full transition-colors ${
-            isFavorite ? 'bg-red-50 text-red-500 dark:bg-red-900/30' : 'bg-white/80 dark:bg-surface-900/80 text-text-muted hover:text-danger'
+            isFav ? 'bg-red-50 text-red-500 dark:bg-red-900/30' : 'bg-white/80 dark:bg-surface-900/80 text-text-muted hover:text-danger'
           }`}
         >
-          <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
+          <Heart className={`w-5 h-5 ${isFav ? 'fill-current' : ''}`} />
         </button>
       </div>
 

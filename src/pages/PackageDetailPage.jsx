@@ -1,7 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { packageApi } from '../api/packageApi';
-import { favoriteApi } from '../api/favoriteApi';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import { 
@@ -9,6 +8,7 @@ import {
   ArrowLeft, CheckCircle2, AlertCircle 
 } from 'lucide-react';
 import { SafeImage } from '../components/packages/SafeImage';
+import { useFavorites } from '../context/FavoritesContext';
 
 export const PackageDetailPage = () => {
   const { id } = useParams();
@@ -18,8 +18,8 @@ export const PackageDetailPage = () => {
   const [pkg, setPkg] = useState(null);
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [favLoading, setFavLoading] = useState(false);
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const isFav = isFavorite(id); // Calculamos si este paquete ya es favorito
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,11 +30,7 @@ export const PackageDetailPage = () => {
         // Buscar el clima en paralelo (sin bloquear la vista principal)
         packageApi.getWeather(id).then(setWeather).catch(console.error);
 
-        // Verificar si está en favoritos (solo si es cliente)
-        if (user && user.rol === 'cliente') {
-          const favs = await favoriteApi.getAll();
-          setIsFavorite(favs.some(f => f._id === id));
-        }
+        
       } catch {
         toast.error('No se pudo cargar el paquete');
         navigate('/');
@@ -45,29 +41,19 @@ export const PackageDetailPage = () => {
     fetchData();
   }, [id, user, navigate]);
 
-  const toggleFavorite = async () => {
+    const handleToggleFavorite = async () => {
     if (!user || user.rol !== 'cliente') {
       toast.info('Iniciá sesión como cliente para guardar favoritos');
       return;
     }
-    
-    setFavLoading(true);
-    try {
-      if (isFavorite) {
-        await favoriteApi.remove(id);
-        setIsFavorite(false);
-        toast.success('Eliminado de favoritos');
-      } else {
-        await favoriteApi.add(id);
-        setIsFavorite(true);
-        toast.success('Agregado a favoritos');
-      }
-    } catch {
+    const success = await toggleFavorite(id);
+    if (success) {
+      toast.success(isFav ? 'Eliminado de favoritos' : 'Agregado a favoritos');
+    } else {
       toast.error('Error al actualizar favoritos');
-    } finally {
-      setFavLoading(false);
     }
   };
+
 
   if (loading) return <div className="text-center py-20 text-xl dark:text-white">Cargando detalle...</div>;
   if (!pkg) return null;
@@ -159,15 +145,14 @@ export const PackageDetailPage = () => {
             
             <div className="flex gap-3">
               <button 
-                onClick={toggleFavorite}
-                disabled={favLoading}
+                onClick={handleToggleFavorite} 
                 className={`p-3 rounded-lg border transition-colors ${
-                  isFavorite 
+                  isFav 
                     ? 'bg-red-50 border-red-200 text-red-500 dark:bg-red-900/20 dark:border-red-900/50' 
                     : 'border-surface-200 text-text-muted hover:bg-surface-50 dark:border-surface-700 dark:hover:bg-surface-700'
                 }`}
               >
-                <Heart className={`w-6 h-6 ${isFavorite ? 'fill-current' : ''}`} />
+                <Heart className={`w-6 h-6 ${isFav ? 'fill-current' : ''}`} />
               </button>
               
               <button className="px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-lg transition-colors flex items-center gap-2">

@@ -1,32 +1,13 @@
 ﻿import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { LogOut, Sun, Moon, Plane, Shield, Heart, ShoppingCart } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useFavorites } from '../../context/FavoritesContext';
+import { useThemeContext } from '../../context/ThemeContext'; 
+import { LogOut, Sun, Moon, Plane, Shield, Heart } from 'lucide-react';
 
 export const Navbar = () => {
   const { user, logout } = useAuth();
-  const [isDark, setIsDark] = useState(() => {
-  const savedTheme = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  return savedTheme === 'dark' || (!savedTheme && prefersDark);
-});
-
-  // Lógica simple de Modo Oscuro (después la movemos a un Context)
-  useEffect(() => {
-  if (isDark) {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
-}, [isDark]);
-
- const toggleTheme = () => {
-  setIsDark((prev) => {
-    const next = !prev;
-    localStorage.setItem('theme', next ? 'dark' : 'light');
-    return next;
-  });
-};
+  const { count } = useFavorites();
+  const { isDark, toggleTheme } = useThemeContext(); // Usamos el hook para obtener el estado del tema y la función para cambiarlo
 
   const activeStyle = ({ isActive }) => 
     `font-medium transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-text-muted hover:text-primary-600 dark:hover:text-primary-400'}`;
@@ -34,14 +15,12 @@ export const Navbar = () => {
   return (
     <header className="bg-white dark:bg-surface-800 shadow-sm sticky top-0 z-50 transition-colors">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        
-        {/* Logo */}
+         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 text-xl font-bold text-primary-600 dark:text-primary-500">
           <Plane className="w-6 h-6" />
           <span>ViajesAR</span>
         </Link>
-
-        {/* Navegación */}
+         {/* Navegación */}
         <nav className="hidden md:flex items-center gap-6">
           <NavLink to="/" className={activeStyle}>Catálogo</NavLink>
           
@@ -53,12 +32,18 @@ export const Navbar = () => {
 
           {user && user.rol !== 'admin' && (
             <NavLink to="/favoritos" className={activeStyle}>
-              <span className="flex items-center gap-1"><Heart className="w-4 h-4" /> Favoritos</span>
+              <span className="flex items-center gap-1 relative">
+                <Heart className="w-4 h-4" /> Favoritos
+                {count > 0 && (
+                  <span className="absolute -top-2 -right-3 bg-danger text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                    {count}
+                  </span>
+                )}
+              </span>
             </NavLink>
           )}
         </nav>
-
-        {/* Acciones (Tema y Auth) */}
+          {/* Acciones (Tema y Auth) */}
         <div className="flex items-center gap-4">
           <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 text-text-muted transition-colors">
             {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
