@@ -1,16 +1,11 @@
-﻿/* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+﻿import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { favoriteApi } from '../api/favoriteApi';
 import { useAuth } from './AuthContext';
 
-// 1. Creamos el contexto
-export const FavoritesContext = createContext();
+// El contexto nunca se exporta.
+const FavoritesContext = createContext(null);
 
-// 2. Exportamos el hook acá mismo
-export const useFavorites = () => useContext(FavoritesContext);
-
-// 3. El Proveedor
-export const FavoritesProvider = ({ children }) => {
+export function FavoritesProvider({ children }) {
   const { user } = useAuth();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -72,4 +67,18 @@ export const FavoritesProvider = ({ children }) => {
       {children}
     </FavoritesContext.Provider>
   );
-};
+}
+
+/**
+ * Hook consumidor con guardia.
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export function useFavorites() {
+  const contexto = useContext(FavoritesContext);
+
+  if (!contexto) {
+    throw new Error('useFavorites() tiene que usarse adentro de <FavoritesProvider>');
+  }
+
+  return contexto;
+}

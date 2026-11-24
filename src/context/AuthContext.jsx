@@ -1,18 +1,16 @@
 ﻿import { createContext, useContext, useState, useEffect } from 'react';
 import { authApi } from '../api/authApi';
 
-// El contexto y su hook se mantienen junto al proveedor por su uso compartido.
-// eslint-disable-next-line react-refresh/only-export-components
-export const AuthContext = createContext();
+// El contexto nunca se exporta.
+const AuthContext = createContext(null);
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const useAuth = () => useContext(AuthContext);
-
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+    
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
       const storedUser = localStorage.getItem('user');
@@ -20,15 +18,16 @@ export const AuthProvider = ({ children }) => {
       if (token && storedUser) {
         try {
           const userData = await authApi.getMe();
-          setUser(userData);
+          if (isMounted) setUser(userData);
         } catch {
-          setUser(null);
+          if (isMounted) setUser(null);
         }
       }
-      setLoading(false);
+      if (isMounted) setLoading(false);
     };
 
     checkAuth();
+    return () => { isMounted = false; };
   }, []);
 
   const login = async (credentials) => {
@@ -55,8 +54,8 @@ export const AuthProvider = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen flex items-center justify-center bg-surface-50 dark:bg-surface-900 text-text-main dark:text-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
       </div>
     );
   }
@@ -66,4 +65,18 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
+}
+
+/**
+ * Hook consumidor con guardia: si se usa afuera del Provider, falla explÃ­cito.
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export function useAuth() {
+  const contexto = useContext(AuthContext);
+
+  if (!contexto) {
+    throw new Error('useAuth() tiene que usarse adentro de <AuthProvider>');
+  }
+
+  return contexto;
+}
