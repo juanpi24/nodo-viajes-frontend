@@ -1,0 +1,127 @@
+import { Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { formatearPrecio } from '../utils/formato';
+import { SafeImage } from '../components/packages/SafeImage';
+import { Trash2, ArrowRight, ShieldCheck } from 'lucide-react';
+
+export const CartPage = () => {
+  const { cart, updateQuantity, removeFromCart, cartTotal } = useCart();
+
+  // Función vacía por ahora (el paso 3 la conecta con MP)
+  const handleCheckout = () => {
+    alert('En el próximo paso conectamos esto con Mercado Pago');
+  };
+
+  if (cart.length === 0) {
+    return (
+      <div className="text-center py-20 space-y-4">
+        <h2 className="text-2xl font-bold text-text-main dark:text-white">
+          Tu carrito está vacío
+        </h2>
+        <p className="text-text-muted">
+          ¿Qué esperás para descubrir tu próximo destino?
+        </p>
+        <Link
+          to="/"
+          className="inline-block mt-4 bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
+        >
+          Ir al catálogo
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-8">
+      <h1 className="text-3xl font-bold text-text-main dark:text-white">
+        Tu Carrito
+      </h1>
+
+      <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 overflow-hidden">
+        <ul className="divide-y divide-surface-200 dark:divide-surface-700">
+          {cart.map((item) => (
+            <li
+              key={item.package}
+              className="p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-4"
+            >
+              {/* Usamos SafeImage en lugar de <img> */}
+              <SafeImage
+                src={item.imagen}
+                alt={item.titulo}
+                className="w-full sm:w-24 h-24 object-cover rounded-lg"
+              />
+
+              <div className="grow text-center sm:text-left">
+                <h3 className="font-bold text-lg text-text-main dark:text-white">
+                  {item.titulo}
+                </h3>
+                <p className="text-primary-600 font-medium">
+                  {formatearPrecio(item.precio)}
+                </p>
+              </div>
+
+              <div className="flex flex-col items-center gap-1">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center border border-surface-300 dark:border-surface-600 rounded-lg">
+                    <button
+                      onClick={() =>
+                        updateQuantity(item.package, item.cantidad - 1)
+                      }
+                      disabled={item.cantidad <= 1}
+                      className="px-3 py-1 text-text-muted hover:bg-surface-100 dark:hover:bg-surface-700 disabled:opacity-50"
+                    >
+                      -
+                    </button>
+                    <span className="px-4 font-medium text-text-main dark:text-white">
+                      {item.cantidad}
+                    </span>
+                    <button
+                      onClick={() =>
+                        updateQuantity(item.package, item.cantidad + 1)
+                      }
+                      disabled={item.cantidad >= item.stockMax}
+                      className="px-3 py-1 text-text-muted hover:bg-surface-100 dark:hover:bg-surface-700 disabled:opacity-50"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => removeFromCart(item.package)}
+                    className="p-2 text-danger hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Mostramos el stock máximo disponible */}
+                <span className="text-xs text-text-muted ">
+                  {item.stockMax > 0
+                    ? `Máx. ${item.stockMax} unidades`
+                    : 'Sin stock'}
+                </span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 p-6 flex flex-col sm:flex-row justify-between items-center gap-6">
+        <div>
+          <p className="text-text-muted mb-1">Total a pagar</p>
+          <p className="text-3xl font-bold text-primary-600 dark:text-primary-400">
+            {formatearPrecio(cartTotal)}
+          </p>
+        </div>
+
+        <button
+          onClick={handleCheckout}
+          className="w-full sm:w-auto px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
+        >
+          <ShieldCheck className="w-5 h-5" /> Pagar con Mercado Pago{' '}
+          <ArrowRight className="w-5 h-5" />
+        </button>
+      </div>
+    </div>
+  );
+};

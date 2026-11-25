@@ -4,6 +4,7 @@ import { RegisterPage } from '../pages/RegisterPage';
 import { CatalogPage } from '../pages/CatalogPage';
 import { PackageDetailPage } from '../pages/PackageDetailPage';
 import { FavoritesPage } from '../pages/FavoritesPage';
+import { CartPage } from '../pages/CartPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { MainLayout } from '../components/layout/MainLayout';
 
@@ -23,6 +24,7 @@ export const AppRoutes = () => {
         {/* Rutas Protegidas (Clientes) */}
         <Route element={<ProtectedRoute />}>
           <Route path="/favoritos" element={<FavoritesPage />} />
+          <Route path="/cart" element={<CartPage />} />
         </Route>
 
         {/* Rutas Protegidas (Admin) */}
