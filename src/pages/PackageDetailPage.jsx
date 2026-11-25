@@ -3,35 +3,44 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { packageApi } from '../api/packageApi';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
-import { 
-  MapPin, Star, Heart, CloudSun, Thermometer, Wind, 
-  ArrowLeft, CheckCircle2, AlertCircle 
-} from 'lucide-react';
-import { SafeImage } from '../components/packages/SafeImage';
 import { useFavorites } from '../context/FavoritesContext';
-import { formatearPrecio } from '../utils/formato'; 
+import { useCart } from '../context/CartContext';
+import { formatearPrecio } from '../utils/formato';
+import { SafeImage } from '../components/packages/SafeImage';
+import {
+  MapPin,
+  Star,
+  Heart,
+  CloudSun,
+  Thermometer,
+  Wind,
+  ArrowLeft,
+  CheckCircle2,
+  AlertCircle,
+  ShoppingCart,
+} from 'lucide-react';
 
 export const PackageDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  
-  const [pkg, setPkg] = useState(null);
-  const [weather, setWeather] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const { isFavorite, toggleFavorite } = useFavorites();
-  const isFav = isFavorite(id); // Calculamos si este paquete ya es favorito
+  const { isFavorite, toggleFavorite } = useFavorites(); // <--- Importamos el hook de favoritos
+  const { addToCart, cart } = useCart(); // <-- Importamos la función para agregar al carrito
+
+  const [pkg, setPkg] = useState(null); // <--- Estado para el paquete
+  const [weather, setWeather] = useState(null); // <--- Estado para el clima
+  const [loading, setLoading] = useState(true); // <--- Estado para el loading
+
+  const isFav = isFavorite(id); // <--- Verificamos si el paquete es favorito
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await packageApi.getById(id);
         setPkg(data);
-        
-        // Buscar el clima en paralelo (sin bloquear la vista principal)
-        packageApi.getWeather(id).then(setWeather).catch(console.error);
 
-        
+        // Buscar el clima en paralelo (sin bloquear la vista principal)
+        await packageApi.getWeather(id).then(setWeather).catch(console.error);
       } catch {
         toast.error('No se pudo cargar el paquete');
         navigate('/');
@@ -40,9 +49,9 @@ export const PackageDetailPage = () => {
       }
     };
     fetchData();
-  }, [id, user, navigate]);
+  }, [id, navigate]);
 
-    const handleToggleFavorite = async () => {
+  const handleToggleFavorite = async () => {
     if (!user || user.rol !== 'cliente') {
       toast.info('Iniciá sesión como cliente para guardar favoritos');
       return;
@@ -55,31 +64,59 @@ export const PackageDetailPage = () => {
     }
   };
 
+  // Función para manejar la adición al carrito
+  const handleAddToCart = () => {
+    if (!user) {
+      toast.info('Iniciá sesión para comprar');
+      navigate('/login');
+      return;
+    }
+    if (user.rol === 'admin') {
+      toast.info('Los administradores no pueden comprar');
+      return;
+    }
 
-  if (loading) return <div className="text-center py-20 text-xl dark:text-white">Cargando detalle...</div>;
+    // Agregamos 1 unidad al carrito y mostramos el aviso
+    addToCart(pkg, 1);
+    toast.success('Agregado al carrito');
+  };
+
+  // Calculamos cuántos de este paquete hay en el carrito
+  const itemEnCarrito = cart.find((item) => item.package === id);
+  const cantidadEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
+  // Restamos el stock original menos lo que ya está en el carrito
+  const stockRestante = pkg ? pkg.stock - cantidadEnCarrito : 0;
+
+  if (loading)
+    return (
+      <div className="text-center py-20 text-xl dark:text-white">
+        Cargando detalle...
+      </div>
+    );
   if (!pkg) return null;
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       {/* Botón Volver */}
-      <Link to="/" className="inline-flex items-center gap-2 text-text-muted hover:text-primary-600 transition-colors">
+      <Link
+        to="/"
+        className="inline-flex items-center gap-2 text-text-muted hover:text-primary-600 transition-colors"
+      >
         <ArrowLeft className="w-5 h-5" /> Volver al catálogo
       </Link>
 
       <div className="bg-white dark:bg-surface-800 rounded-2xl shadow-xl overflow-hidden border border-surface-100 dark:border-surface-700 flex flex-col md:flex-row">
-        
-        {/* Imagen Izquierda */}
+        {/* Imagen izquierda del paquete y etiqueta de destacado */}
         <div className="md:w-1/2 relative h-72 md:h-auto">
-          
           <SafeImage
-          src={pkg.imagen} 
-          alt={pkg.titulo} 
-          lazy={false}
-          iconSize="w-14 h-14"
-          fallbackText="Imagen del paquete no disponible"
-          className="w-full h-full object-cover" 
+            src={pkg.imagen}
+            alt={pkg.titulo}
+            lazy={false}
+            iconSize="w-14 h-14"
+            fallbackText="Imagen del paquete no disponible"
+            className="w-full h-full object-cover"
           />
-          
+
           {pkg.destacado && (
             <span className="absolute top-4 left-4 bg-accent text-white text-sm font-bold px-3 py-1.5 rounded-lg shadow-md">
               DESTACADO
@@ -99,11 +136,15 @@ export const PackageDetailPage = () => {
             </span>
           </div>
 
-          <h1 className="text-3xl font-bold text-text-main dark:text-white mb-4">{pkg.titulo}</h1>
-          
+          <h1 className="text-3xl font-bold text-text-main dark:text-white mb-4">
+            {pkg.titulo}
+          </h1>
+
           <div className="flex items-center gap-2 mb-6">
             <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-            <span className="font-bold text-text-main dark:text-white">4.8</span>
+            <span className="font-bold text-text-main dark:text-white">
+              4.8
+            </span>
             <span className="text-text-muted">(24 reseñas)</span>
           </div>
 
@@ -120,7 +161,9 @@ export const PackageDetailPage = () => {
               <div className="flex gap-6 text-text-main dark:text-white">
                 <div className="flex items-center gap-2">
                   <Thermometer className="w-5 h-5 text-red-500" />
-                  <span className="text-lg font-bold">{weather.temperatura}°C</span>
+                  <span className="text-lg font-bold">
+                    {weather.temperatura}°C
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Wind className="w-5 h-5 text-gray-500" />
@@ -131,7 +174,9 @@ export const PackageDetailPage = () => {
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-text-muted">{weather?.mensaje || 'Cargando clima...'}</p>
+              <p className="text-sm text-text-muted">
+                {weather?.mensaje || 'Cargando clima...'}
+              </p>
             )}
           </div>
 
@@ -143,34 +188,47 @@ export const PackageDetailPage = () => {
                 {formatearPrecio(pkg.precio)}
               </p>
             </div>
-            
+
             <div className="flex gap-3">
-              <button 
-                onClick={handleToggleFavorite} 
-                className={`p-3 rounded-lg border transition-colors ${
-                  isFav 
-                    ? 'bg-red-50 border-red-200 text-red-500 dark:bg-red-900/20 dark:border-red-900/50' 
-                    : 'border-surface-200 text-text-muted hover:bg-surface-50 dark:border-surface-700 dark:hover:bg-surface-700'
-                }`}
+              <button
+                onClick={handleToggleFavorite}
+                className={`p-3 rounded-lg border transition-colors ${isFav ? 'bg-red-50 border-red-200 text-red-500 dark:bg-red-900/20 dark:border-red-900/50' : 'border-surface-200 text-text-muted hover:bg-surface-50 dark:border-surface-700 dark:hover:bg-surface-700'}`}
               >
                 <Heart className={`w-6 h-6 ${isFav ? 'fill-current' : ''}`} />
               </button>
-              
-              <button className="px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-lg transition-colors flex items-center gap-2">
-                Comprar Paquete
+
+              {/* Botón stockRestante */}
+              <button
+                onClick={handleAddToCart}
+                disabled={stockRestante <= 0}
+                className="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {stockRestante <= 0
+                  ? 'Sin cupos disponibles'
+                  : 'Comprar Paquete'}
               </button>
             </div>
           </div>
 
-          {/* Stock */}
+          {/* Texto con stockRestante */}
           <div className="mt-4 flex items-center gap-2 text-sm">
-            {pkg.stock > 0 ? (
-              <><CheckCircle2 className="w-4 h-4 text-accent" /> <span className="text-text-muted">Hay {pkg.stock} cupos disponibles</span></>
+            {stockRestante > 0 ? (
+              <>
+                <CheckCircle2 className="w-4 h-4 text-accent" />{' '}
+                <span className="text-text-muted">
+                  Hay {stockRestante} cupos disponibles
+                </span>
+              </>
             ) : (
-              <><AlertCircle className="w-4 h-4 text-danger" /> <span className="text-danger font-medium">Sin stock por el momento</span></>
+              <>
+                <AlertCircle className="w-4 h-4 text-danger" />{' '}
+                <span className="text-danger font-medium">
+                  Alcanzaste el límite de cupos en tu carrito
+                </span>
+              </>
             )}
           </div>
-
         </div>
       </div>
     </div>

@@ -62,7 +62,7 @@ export function FavoritesProvider({ children }) {
       toggleFavorite, 
       isFavorite, 
       refreshFavorites,
-      count: favorites.length 
+      favCount: favorites.length 
     }}>
       {children}
     </FavoritesContext.Provider>
