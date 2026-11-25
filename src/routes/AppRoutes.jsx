@@ -5,6 +5,7 @@ import { CatalogPage } from '../pages/CatalogPage';
 import { PackageDetailPage } from '../pages/PackageDetailPage';
 import { FavoritesPage } from '../pages/FavoritesPage';
 import { CartPage } from '../pages/CartPage';
+import { PaymentResultPage } from '../pages/PaymentResultPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { MainLayout } from '../components/layout/MainLayout';
 
@@ -20,6 +21,8 @@ export const AppRoutes = () => {
         {/* Catálogo y Detalle son PÚBLICOS */}
         <Route path="/" element={<CatalogPage />} />
         <Route path="/packages/:id" element={<PackageDetailPage />} />
+        {/* Ruta pública para recibir el retorno de Mercado Pago */}
+        <Route path="/payment-result" element={<PaymentResultPage />} />
 
         {/* Rutas Protegidas (Clientes) */}
         <Route element={<ProtectedRoute />}>

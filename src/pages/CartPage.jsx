@@ -1,17 +1,47 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { orderApi } from '../api/orderApi';
 import { formatearPrecio } from '../utils/formato';
 import { SafeImage } from '../components/packages/SafeImage';
-import { Trash2, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Trash2, ArrowRight, ShieldCheck, Loader2 } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 export const CartPage = () => {
-  const { cart, updateQuantity, removeFromCart, cartTotal } = useCart();
+  const { cart, updateQuantity, removeFromCart, cartTotal, clearCart } =
+    useCart();
+  const [loading, setLoading] = useState(false);
 
-  // Función vacía por ahora (el paso 3 la conecta con MP)
-  const handleCheckout = () => {
-    alert('En el próximo paso conectamos esto con Mercado Pago');
+  // Función para manejar el checkout
+  const handleCheckout = async () => {
+    setLoading(true);
+    try {
+      // Mandamos al backend solo los IDs y cantidades
+      const items = cart.map((item) => ({
+        package: item.package,
+        cantidad: item.cantidad,
+      }));
+
+      // Creamos la orden en el backend y obtenemos el link de Mercado Pago
+      const res = await orderApi.create(items);
+
+      // Guardamos el ID de la orden para verificarla al volver de MP
+      localStorage.setItem('last_order_id', res.orderId);
+
+      // Vaciamos el carrito local ANTES de ir a pagar
+      clearCart();
+
+      // Redirigimos a la pasarela de Mercado Pago
+      window.location.href = res.init_point;
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || 'Error al conectar con Mercado Pago',
+      );
+      setLoading(false);
+    }
   };
 
+  // Si el carrito está vacío, mostramos un mensaje y un enlace al catálogo
   if (cart.length === 0) {
     return (
       <div className="text-center py-20 space-y-4">
@@ -76,9 +106,13 @@ export const CartPage = () => {
                     >
                       -
                     </button>
+
+                    {/*Mostramos la cantidad actual en el medio*/}
                     <span className="px-4 font-medium text-text-main dark:text-white">
                       {item.cantidad}
                     </span>
+
+                    {/* Botón de aumentar cantidad */}
                     <button
                       onClick={() =>
                         updateQuantity(item.package, item.cantidad + 1)
@@ -89,7 +123,6 @@ export const CartPage = () => {
                       +
                     </button>
                   </div>
-
                   {/* Texto del stock centrado respecto al selector */}
                   <span className="text-[10px] sm:text-xs text-text-muted mt-1 w-full text-center block">
                     {item.stockMax > 0
@@ -97,7 +130,6 @@ export const CartPage = () => {
                       : 'Sin stock'}
                   </span>
                 </div>
-
                 {/* Botón de eliminar (separado a la derecha) */}
                 <button
                   onClick={() => removeFromCart(item.package)}
@@ -119,12 +151,22 @@ export const CartPage = () => {
           </p>
         </div>
 
+        {/* Botón de checkout con estado de carga */}
         <button
           onClick={handleCheckout}
-          className="w-full sm:w-auto px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
+          disabled={loading}
+          className="w-full sm:w-auto px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
         >
-          <ShieldCheck className="w-5 h-5" /> Pagar con Mercado Pago{' '}
-          <ArrowRight className="w-5 h-5" />
+          {loading ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" /> Procesando...
+            </>
+          ) : (
+            <>
+              <ShieldCheck className="w-5 h-5" /> Pagar con Mercado Pago{' '}
+              <ArrowRight className="w-5 h-5" />
+            </>
+          )}
         </button>
       </div>
     </div>
