@@ -25,7 +25,7 @@ export function CartProvider({ children }) {
     setCart((prev) => {
       const existe = prev.find((item) => item.package === pkg._id);
       if (existe) {
-      // Si ya existe, sumamos la cantidad pero sin superar el stock
+        // Si ya existe, sumamos la cantidad pero sin superar el stock
         return prev.map((item) =>
           item.package === pkg._id
             ? {

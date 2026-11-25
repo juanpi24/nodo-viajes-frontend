@@ -22,13 +22,20 @@ export const FavoritesPage = () => {
         <h1 className="text-3xl font-bold text-text-main dark:text-white flex items-center gap-3">
           Mis Favoritos <HeartOff className="w-8 h-8 text-red-500" />
         </h1>
-        <p className="text-text-muted mt-1">Los paquetes que guardaste para tu próximo viaje.</p>
+        <p className="text-text-muted mt-1">
+          Los paquetes que guardaste para tu próximo viaje.
+        </p>
       </div>
 
       {favorites.length === 0 ? (
         <div className="text-center py-20 bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 flex flex-col items-center">
-          <p className="text-xl text-text-muted mb-6">Todavía no guardaste ningún paquete.</p>
-          <Link to="/" className="bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors">
+          <p className="text-xl text-text-muted mb-6">
+            Todavía no guardaste ningún paquete.
+          </p>
+          <Link
+            to="/"
+            className="bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
+          >
             Explorar paquetes
           </Link>
         </div>

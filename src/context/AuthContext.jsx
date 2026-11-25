@@ -10,7 +10,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     let isMounted = true;
-    
+
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
       const storedUser = localStorage.getItem('user');
@@ -27,7 +27,9 @@ export function AuthProvider({ children }) {
     };
 
     checkAuth();
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const login = async (credentials) => {

@@ -9,14 +9,18 @@ import { PaymentResultPage } from '../pages/PaymentResultPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { MainLayout } from '../components/layout/MainLayout';
 
-const AdminTemporal = () => <div className="text-2xl font-bold">Panel de Administración (Próximamente)</div>;
+const AdminTemporal = () => (
+  <div className="text-2xl font-bold">
+    Panel de Administración (Próximamente)
+  </div>
+);
 
 export const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      
+
       <Route element={<MainLayout />}>
         {/* Catálogo y Detalle son PÚBLICOS */}
         <Route path="/" element={<CatalogPage />} />

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { orderApi } from '../api/orderApi';
 import { formatearPrecio } from '../utils/formato';
-import { SafeImage } from '../components/packages/SafeImage';
+import { SafeImage } from '../components/ui/SafeImage';
 import { Trash2, ArrowRight, ShieldCheck, Loader2 } from 'lucide-react';
 import { toast } from 'react-toastify';
 

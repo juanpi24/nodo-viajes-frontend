@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useFavorites } from '../../context/FavoritesContext';
 import { toast } from 'react-toastify';
-import { SafeImage } from './SafeImage';
+import { SafeImage } from '../ui/SafeImage';
 import { formatearPrecio } from '../../utils/formato';
 
 export const PackageCard = ({ pkg }) => {
@@ -35,11 +35,10 @@ export const PackageCard = ({ pkg }) => {
 
   return (
     <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-surface-100 dark:border-surface-700 group flex flex-col">
-      
       <div className="relative h-48 overflow-hidden">
-        <SafeImage 
-          src={pkg.imagen} 
-          alt={pkg.titulo} 
+        <SafeImage
+          src={pkg.imagen}
+          alt={pkg.titulo}
           fallbackText="Imagen del paquete no disponible"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
@@ -48,10 +47,12 @@ export const PackageCard = ({ pkg }) => {
             DESTACADO
           </span>
         )}
-        <button 
+        <button
           onClick={handleToggleFavorite}
           className={`absolute top-3 right-3 p-2 backdrop-blur-sm rounded-full transition-colors ${
-            isFav ? 'bg-red-50 text-red-500 dark:bg-red-900/30' : 'bg-white/80 dark:bg-surface-900/80 text-text-muted hover:text-danger'
+            isFav
+              ? 'bg-red-50 text-red-500 dark:bg-red-900/30'
+              : 'bg-white/80 dark:bg-surface-900/80 text-text-muted hover:text-danger'
           }`}
         >
           <Heart className={`w-5 h-5 ${isFav ? 'fill-current' : ''}`} />
@@ -63,14 +64,16 @@ export const PackageCard = ({ pkg }) => {
           <MapPin className="w-4 h-4" />
           <span>{pkg.destino}</span>
         </div>
-        
+
         <h3 className="text-lg font-bold text-text-main dark:text-white mb-2 line-clamp-2">
           {pkg.titulo}
         </h3>
-        
+
         <div className="flex items-center gap-1 mb-4">
           <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-          <span className="text-sm font-medium text-text-main dark:text-gray-300">4.8</span>
+          <span className="text-sm font-medium text-text-main dark:text-gray-300">
+            4.8
+          </span>
           <span className="text-xs text-text-muted">(24 reseñas)</span>
         </div>
 
@@ -81,7 +84,7 @@ export const PackageCard = ({ pkg }) => {
               {formatearPrecio(pkg.precio)}
             </p>
           </div>
-          <Link 
+          <Link
             to={`/packages/${pkg._id}`}
             className="px-4 py-2 bg-primary-50 dark:bg-surface-700 text-primary-600 dark:text-primary-400 text-sm font-semibold rounded-lg hover:bg-primary-100 dark:hover:bg-surface-600 transition-colors"
           >

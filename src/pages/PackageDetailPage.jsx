@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useFavorites } from '../context/FavoritesContext';
 import { useCart } from '../context/CartContext';
 import { formatearPrecio } from '../utils/formato';
-import { SafeImage } from '../components/packages/SafeImage';
+import { SafeImage } from '../components/ui/SafeImage';
 import {
   MapPin,
   Star,

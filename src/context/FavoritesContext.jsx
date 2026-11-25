@@ -1,4 +1,10 @@
-﻿import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+﻿import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from 'react';
 import { favoriteApi } from '../api/favoriteApi';
 import { useAuth } from './AuthContext';
 
@@ -35,13 +41,13 @@ export function FavoritesProvider({ children }) {
 
   const toggleFavorite = async (packageId) => {
     if (!user || user?.rol !== 'cliente') return false;
-    
-    const isFav = favorites.some(f => f._id === packageId);
-    
+
+    const isFav = favorites.some((f) => f._id === packageId);
+
     try {
       if (isFav) {
         await favoriteApi.remove(packageId);
-        setFavorites(prev => prev.filter(f => f._id !== packageId));
+        setFavorites((prev) => prev.filter((f) => f._id !== packageId));
       } else {
         await favoriteApi.add(packageId);
         await refreshFavorites();
@@ -53,17 +59,19 @@ export function FavoritesProvider({ children }) {
     }
   };
 
-  const isFavorite = (packageId) => favorites.some(f => f._id === packageId);
+  const isFavorite = (packageId) => favorites.some((f) => f._id === packageId);
 
   return (
-    <FavoritesContext.Provider value={{ 
-      favorites, 
-      loading, 
-      toggleFavorite, 
-      isFavorite, 
-      refreshFavorites,
-      favCount: favorites.length 
-    }}>
+    <FavoritesContext.Provider
+      value={{
+        favorites,
+        loading,
+        toggleFavorite,
+        isFavorite,
+        refreshFavorites,
+        favCount: favorites.length,
+      }}
+    >
       {children}
     </FavoritesContext.Provider>
   );
@@ -77,7 +85,9 @@ export function useFavorites() {
   const contexto = useContext(FavoritesContext);
 
   if (!contexto) {
-    throw new Error('useFavorites() tiene que usarse adentro de <FavoritesProvider>');
+    throw new Error(
+      'useFavorites() tiene que usarse adentro de <FavoritesProvider>',
+    );
   }
 
   return contexto;
