@@ -6,14 +6,9 @@ import { PackageDetailPage } from '../pages/PackageDetailPage';
 import { FavoritesPage } from '../pages/FavoritesPage';
 import { CartPage } from '../pages/CartPage';
 import { PaymentResultPage } from '../pages/PaymentResultPage';
+import { AdminPackagesPage } from '../pages/admin/AdminPackagesPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { MainLayout } from '../components/layout/MainLayout';
-
-const AdminTemporal = () => (
-  <div className="text-2xl font-bold">
-    Panel de Administración (Próximamente)
-  </div>
-);
 
 export const AppRoutes = () => {
   return (
@@ -22,11 +17,10 @@ export const AppRoutes = () => {
       <Route path="/register" element={<RegisterPage />} />
 
       <Route element={<MainLayout />}>
-        {/* Catálogo y Detalle son PÚBLICOS */}
+        {/* Catálogo y Detalle son Públicos */}
         <Route path="/" element={<CatalogPage />} />
         <Route path="/packages/:id" element={<PackageDetailPage />} />
-        {/* Ruta pública para recibir el retorno de Mercado Pago */}
-        <Route path="/payment-result" element={<PaymentResultPage />} />
+        <Route path="/pago/:status" element={<PaymentResultPage />} />
 
         {/* Rutas Protegidas (Clientes) */}
         <Route element={<ProtectedRoute />}>
@@ -34,9 +28,13 @@ export const AppRoutes = () => {
           <Route path="/cart" element={<CartPage />} />
         </Route>
 
-        {/* Rutas Protegidas (Admin) */}
+        {/* Rutas de Administrador */}
         <Route element={<ProtectedRoute adminOnly={true} />}>
-          <Route path="/admin" element={<AdminTemporal />} />
+          <Route
+            path="/admin"
+            element={<Navigate to="/admin/packages" replace />}
+          />
+          <Route path="/admin/packages" element={<AdminPackagesPage />} />
         </Route>
       </Route>
 
