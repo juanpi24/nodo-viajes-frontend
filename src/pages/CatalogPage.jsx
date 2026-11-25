@@ -2,7 +2,7 @@
 import { packageApi } from '../api/packageApi';
 import { favoriteApi } from '../api/favoriteApi';
 import { PackageCard } from '../components/packages/PackageCard';
-import { Search, SlidersHorizontal, Loader2 } from 'lucide-react';
+import { Search, SlidersHorizontal, Loader2, SearchX} from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 
@@ -109,8 +109,9 @@ export const CatalogPage = () => {
           <Loader2 className="w-10 h-10 animate-spin text-primary-500" />
         </div>
       ) : packages.length === 0 ? (
-        <div className="text-center py-20 bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700">
-          <p className="text-xl text-text-muted">
+        <div className="text-center py-20 bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 flex flex-col items-center">
+          <SearchX className="h-12 w-12 text-gray-400 mb-4"/>
+          <p className="text-xl text-text-muted mb-6">
             No se encontraron paquetes con esos filtros.
           </p>
           <button
@@ -118,7 +119,7 @@ export const CatalogPage = () => {
               setSearch('');
               setCategoria('Todas');
             }}
-            className="mt-4 text-primary-600 hover:underline"
+            className="bg-primary-600 text-white px-4 py-2 rounded-md font-medium hover:bg-primary-700 transition-colors"
           >
             Limpiar filtros
           </button>
