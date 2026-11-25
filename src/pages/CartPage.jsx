@@ -44,11 +44,13 @@ export const CartPage = () => {
               key={item.package}
               className="p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-4"
             >
-              {/* Usamos SafeImage en lugar de <img> */}
+              {/* Imagen adaptada para el carrito */}
               <SafeImage
                 src={item.imagen}
                 alt={item.titulo}
-                className="w-full sm:w-24 h-24 object-cover rounded-lg"
+                className="w-full sm:w-24 h-24 rounded-lg shrink-0"
+                iconSize="w-6 h-6"
+                fallbackText=""
               />
 
               <div className="grow text-center sm:text-left">
@@ -60,8 +62,10 @@ export const CartPage = () => {
                 </p>
               </div>
 
-              <div className="flex flex-col items-center gap-1">
-                <div className="flex items-center gap-4">
+              {/* Controles de cantidad y botón de eliminar */}
+              <div className="flex items-center gap-4">
+                {/* Agrupamos el selector y el texto para que se centren juntos */}
+                <div className="flex flex-col items-center">
                   <div className="flex items-center border border-surface-300 dark:border-surface-600 rounded-lg">
                     <button
                       onClick={() =>
@@ -86,20 +90,21 @@ export const CartPage = () => {
                     </button>
                   </div>
 
-                  <button
-                    onClick={() => removeFromCart(item.package)}
-                    className="p-2 text-danger hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
+                  {/* Texto del stock centrado respecto al selector */}
+                  <span className="text-[10px] sm:text-xs text-text-muted mt-1 w-full text-center block">
+                    {item.stockMax > 0
+                      ? `Máx. ${item.stockMax} unidades`
+                      : 'Sin stock'}
+                  </span>
                 </div>
 
-                {/* Mostramos el stock máximo disponible */}
-                <span className="text-xs text-text-muted ">
-                  {item.stockMax > 0
-                    ? `Máx. ${item.stockMax} unidades`
-                    : 'Sin stock'}
-                </span>
+                {/* Botón de eliminar (separado a la derecha) */}
+                <button
+                  onClick={() => removeFromCart(item.package)}
+                  className="p-2 text-danger hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
               </div>
             </li>
           ))}

@@ -4,16 +4,17 @@ import { ImageOff } from 'lucide-react';
 export const SafeImage = ({
   src,
   alt,
-  className = '',
+  className = '', // Ahora este className va al contenedor principal
   iconSize = 'w-10 h-10',
   fallbackText = 'Sin imagen',
-  lazy = true, // Carga diferida activada por defecto
+  lazy = true,
 }) => {
   const sourceKey = src == null ? '' : String(src);
   const [imageState, setImageState] = useState({
     src: sourceKey,
     status: sourceKey ? 'loading' : 'error',
   });
+  
   const status =
     imageState.src === sourceKey
       ? imageState.status
@@ -23,10 +24,10 @@ export const SafeImage = ({
 
   if (status === 'error') {
     return (
-      <div className="w-full h-full min-h-48 bg-gray-100 dark:bg-surface-900/60 flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 select-none p-4">
-        <ImageOff className={`${iconSize} mb-2 opacity-75`} />
+      <div className={`flex flex-col items-center justify-center bg-gray-100 dark:bg-surface-900/60 text-gray-400 dark:text-gray-500 select-none overflow-hidden p-2 ${className}`}>
+        <ImageOff className={`${iconSize} opacity-75 ${fallbackText ? 'mb-1' : ''}`} />
         {fallbackText && (
-          <span className="text-xs font-medium text-center">
+          <span className="text-[10px] sm:text-xs font-medium text-center leading-tight">
             {fallbackText}
           </span>
         )}
@@ -35,7 +36,7 @@ export const SafeImage = ({
   }
 
   return (
-    <div className="relative w-full h-full">
+    <div className={`relative overflow-hidden ${className}`}>
       {status === 'loading' && (
         <div className="absolute inset-0 bg-gray-200 dark:bg-surface-700 animate-pulse" />
       )}
@@ -47,7 +48,7 @@ export const SafeImage = ({
         decoding="async"
         onLoad={() => setImageState({ src: sourceKey, status: 'loaded' })}
         onError={() => setImageState({ src: sourceKey, status: 'error' })}
-        className={`w-full h-full object-cover transition-opacity duration-300 ${className} ${
+        className={`w-full h-full object-cover transition-opacity duration-300 ${
           status === 'loaded' ? 'opacity-100' : 'opacity-0'
         }`}
       />
