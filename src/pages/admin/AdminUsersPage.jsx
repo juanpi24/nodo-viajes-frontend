@@ -10,10 +10,14 @@ import {
   PlusCircle,
   Edit,
 } from 'lucide-react';
+import { ConfirmationModal } from '../../components/ui/ConfirmationModal'; // <-- IMPORT AGREGADO
 
 export const AdminUsersPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // <-- NUEVO ESTADO PARA EL MODAL
+  const [userToDelete, setUserToDelete] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -31,11 +35,12 @@ export const AdminUsersPage = () => {
     };
   }, []);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('¿Eliminar este usuario?')) return;
+  // <-- MODIFICAMOS EL HANDLE DELETE
+  const handleDelete = async () => {
+    if (!userToDelete) return;
     try {
-      await api.delete(`/users/${id}`);
-      setUsers(users.filter((u) => u._id !== id));
+      await api.delete(`/users/${userToDelete._id}`);
+      setUsers(users.filter((u) => u._id !== userToDelete._id));
       toast.success('Usuario eliminado');
     } catch {
       toast.error('Error al eliminar usuario');
@@ -107,8 +112,9 @@ export const AdminUsersPage = () => {
                     >
                       <Edit className="w-4 h-4" />
                     </Link>
+                    {/* <-- BOTÓN MODIFICADO PARA ABRIR EL MODAL */}
                     <button
-                      onClick={() => handleDelete(u._id)}
+                      onClick={() => setUserToDelete(u)}
                       className="p-2 text-danger hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors cursor-pointer"
                       title="Eliminar"
                     >
@@ -121,6 +127,20 @@ export const AdminUsersPage = () => {
           </tbody>
         </table>
       </div>
+
+      {/* <-- COMPONENTE MODAL AGREGADO AL FINAL */}
+      <ConfirmationModal
+        abierto={!!userToDelete}
+        onCerrar={() => setUserToDelete(null)}
+        onConfirmar={handleDelete}
+        titulo="¿Eliminar usuario?"
+        mensaje={
+          <>
+            Estás a punto de eliminar a <strong>{userToDelete?.nombre}</strong>.
+            Esta acción no se puede deshacer.
+          </>
+        }
+      />
     </div>
   );
 };
