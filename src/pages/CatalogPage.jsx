@@ -2,19 +2,22 @@
 import { packageApi } from '../api/packageApi';
 import { favoriteApi } from '../api/favoriteApi';
 import { PackageCard } from '../components/packages/PackageCard';
-import { SlidersHorizontal, Loader2, SearchX } from 'lucide-react';
-import { toast } from 'react-toastify';
+import { SlidersHorizontal } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { CATEGORIAS } from '../constants/destinos.js';
 import { SearchBar } from '../components/ui/SearchBar';
 import { Pagination } from '../components/ui/Pagination';
 import { useDebounce } from '../hooks/useDebounce';
+import { Cargando } from '../components/ui/Cargando';
+import { MensajeError } from '../components/ui/MensajeError';
+import { NoEncontrado } from '../components/ui/NoEncontrado';
 
 export const CatalogPage = () => {
   const { user } = useAuth();
   const [packages, setPackages] = useState([]);
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [search, setSearch] = useState('');
   const [categoria, setCategoria] = useState('Todas');
   const [page, setPage] = useState(1);
@@ -24,10 +27,11 @@ export const CatalogPage = () => {
 
   useEffect(() => {
     let isMounted = true;
-
     const loadData = async () => {
-      if (isMounted) setLoading(true);
-
+      if (isMounted) {
+        setLoading(true);
+        setError(false);
+      }
       try {
         const params = { page, limit: 8 };
         if (debouncedSearch) params.search = debouncedSearch;
@@ -45,18 +49,16 @@ export const CatalogPage = () => {
           if (isMounted) setFavoriteIds(favs.map((f) => f._id));
         }
       } catch {
-        if (isMounted) toast.error('Error al cargar el catálogo');
+        if (isMounted) setError(true);
       } finally {
         if (isMounted) setLoading(false);
       }
     };
-
     loadData();
-
     return () => {
       isMounted = false;
     };
-  }, [page, debouncedSearch, categoria, user]); // Dependencias directas, sin funciones externas
+  }, [page, debouncedSearch, categoria, user]);
 
   const handleSearch = (value) => {
     setSearch(value);
@@ -74,7 +76,6 @@ export const CatalogPage = () => {
             Descubrí los mejores destinos para tu próxima aventura.
           </p>
         </div>
-
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
           <SearchBar
             value={search}
@@ -105,25 +106,23 @@ export const CatalogPage = () => {
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center py-20">
-          <Loader2 className="w-10 h-10 animate-spin text-primary-500" />
-        </div>
+        <Cargando mensaje="Buscando paquetes..." />
+      ) : error ? (
+        <MensajeError
+          mensaje="No se pudo conectar con el servidor."
+          onReintentar={() => setSearch(search)}
+        />
       ) : packages.length === 0 ? (
-        <div className="text-center py-20 bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 flex flex-col items-center">
-          <SearchX className="h-12 w-12 text-gray-400 mb-4" />
-          <p className="text-xl text-text-muted mb-6">
-            No se encontraron paquetes con esos filtros.
-          </p>
-          <button
-            onClick={() => {
-              setSearch('');
-              setCategoria('Todas');
-            }}
-            className="bg-primary-600 text-white px-4 py-2 rounded-md font-medium hover:bg-primary-700 transition-colors cursor-pointer"
-          >
-            Limpiar filtros
-          </button>
-        </div>
+        <NoEncontrado
+          titulo="Sin resultados"
+          mensaje="No encontramos paquetes con esos filtros. Probá buscando otro destino."
+          textoBoton="Limpiar filtros"
+          onVolver={() => {
+            setSearch('');
+            setCategoria('Todas');
+            setPage(1);
+          }}
+        />
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -135,7 +134,6 @@ export const CatalogPage = () => {
               />
             ))}
           </div>
-
           <Pagination
             page={page}
             totalPages={totalPages}

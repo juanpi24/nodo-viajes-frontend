@@ -15,6 +15,7 @@ import { AdminUsersPage } from '../pages/admin/AdminUsersPage';
 import { AdminUserFormPage } from '../pages/admin/AdminUserFormPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { MainLayout } from '../components/layout/MainLayout';
+import { NoEncontrado } from '../components/ui/NoEncontrado';
 
 export const AppRoutes = () => {
   return (
@@ -58,7 +59,13 @@ export const AppRoutes = () => {
         </Route>
       </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* Página no encontrada 404 */}
+        <Route path="*" element={
+          <NoEncontrado 
+            titulo="Página no encontrada" 
+            mensaje="La ruta que estás buscando no existe o fue movida de lugar." 
+          />
+        } />
     </Routes>
   );
 };
