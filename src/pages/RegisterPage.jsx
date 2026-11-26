@@ -24,7 +24,7 @@ export const RegisterPage = () => {
     setIsSubmitting(true);
     try {
       await registerAuth(data);
-      toast.success('Â¡Cuenta creada con Ã©xito!');
+      toast.success('¡Cuenta creada con éxito!');
       navigate('/');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Error al registrarse');
