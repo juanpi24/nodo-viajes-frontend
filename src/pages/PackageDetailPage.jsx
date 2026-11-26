@@ -181,7 +181,7 @@ export const PackageDetailPage = () => {
           </div>
 
           {/* Precio y Acciones */}
-          <div className="mt-auto pt-6 border-t border-surface-100 dark:border-surface-700 flex items-center justify-between">
+          <div className="mt-auto pt-6 border-t border-surface-100 dark:border-surface-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
             <div>
               <p className="text-sm text-text-muted">Precio por persona</p>
               <p className="text-3xl font-bold text-primary-600 dark:text-primary-400">
@@ -189,24 +189,23 @@ export const PackageDetailPage = () => {
               </p>
             </div>
 
-            <div className="flex gap-3">
+            {/* En móvil ocupa todo el ancho (w-full), en PC se ajusta al contenido (sm:w-auto) */}
+            <div className="flex gap-3 w-full sm:w-auto">
               <button
                 onClick={handleToggleFavorite}
-                className={`p-3 rounded-lg border transition-colors ${isFav ? 'bg-red-50 border-red-200 text-red-500 dark:bg-red-900/20 dark:border-red-900/50' : 'border-surface-200 text-text-muted hover:bg-surface-50 dark:border-surface-700 dark:hover:bg-surface-700'}`}
+                className={`p-3 rounded-lg border transition-colors shrink-0 ${isFav ? 'bg-red-50 border-red-200 text-red-500 dark:bg-red-900/20 dark:border-red-900/50' : 'border-surface-200 text-text-muted hover:bg-surface-50 dark:border-surface-700 dark:hover:bg-surface-700'}`}
               >
                 <Heart className={`w-6 h-6 ${isFav ? 'fill-current' : ''}`} />
               </button>
 
-              {/* Botón stockRestante */}
+              {/* En móvil crece para ocupar el espacio restante (flex-1), en PC vuelve a su tamaño (sm:flex-none) */}
               <button
                 onClick={handleAddToCart}
                 disabled={stockRestante <= 0}
-                className="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 sm:flex-none justify-center px-4 sm:px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ShoppingCart className="w-5 h-5" />
-                {stockRestante <= 0
-                  ? 'Sin cupos disponibles'
-                  : 'Comprar Paquete'}
+                {stockRestante <= 0 ? 'Sin cupos' : 'Comprar Paquete'}
               </button>
             </div>
           </div>
