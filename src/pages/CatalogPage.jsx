@@ -2,10 +2,13 @@
 import { packageApi } from '../api/packageApi';
 import { favoriteApi } from '../api/favoriteApi';
 import { PackageCard } from '../components/packages/PackageCard';
-import { Search, SlidersHorizontal, Loader2, SearchX} from 'lucide-react';
+import { SlidersHorizontal, Loader2, SearchX } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import { CATEGORIAS } from '../constants/destinos.js';
+import { SearchBar } from '../components/ui/SearchBar';
+import { Pagination } from '../components/ui/Pagination';
+import { useDebounce } from '../hooks/useDebounce';
 
 export const CatalogPage = () => {
   const { user } = useAuth();
@@ -17,35 +20,48 @@ export const CatalogPage = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const fetchPackages = async () => {
-    setLoading(true);
-    try {
-      const params = { page, limit: 8 };
-      if (search) params.search = search;
-      if (categoria !== 'Todas') params.categoria = categoria;
-
-      const res = await packageApi.getAll(params);
-      setPackages(res.data);
-      setTotalPages(res.meta.totalPages);
-
-      // Si hay usuario cliente, traer sus favoritos para marcar los corazones
-      if (user && user.rol === 'cliente') {
-        const favs = await favoriteApi.getAll();
-        setFavoriteIds(favs.map((f) => f._id));
-      }
-    } catch {
-      toast.error('Error al cargar el catálogo');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const debouncedSearch = useDebounce(search, 500);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchPackages();
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [search, categoria, page, user]);
+    let isMounted = true;
+
+    const loadData = async () => {
+      if (isMounted) setLoading(true);
+
+      try {
+        const params = { page, limit: 8 };
+        if (debouncedSearch) params.search = debouncedSearch;
+        if (categoria !== 'Todas') params.categoria = categoria;
+
+        const res = await packageApi.getAll(params);
+
+        if (isMounted) {
+          setPackages(res.data);
+          setTotalPages(res.meta.totalPages);
+        }
+
+        if (user && user.rol === 'cliente') {
+          const favs = await favoriteApi.getAll();
+          if (isMounted) setFavoriteIds(favs.map((f) => f._id));
+        }
+      } catch {
+        if (isMounted) toast.error('Error al cargar el catálogo');
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [page, debouncedSearch, categoria, user]); // Dependencias directas, sin funciones externas
+
+  const handleSearch = (value) => {
+    setSearch(value);
+    setPage(1);
+  };
 
   return (
     <div className="space-y-8">
@@ -60,19 +76,11 @@ export const CatalogPage = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Buscar destino..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-              className="w-full sm:w-64 pl-10 pr-4 py-2.5 bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none dark:text-white"
-            />
-          </div>
+          <SearchBar
+            value={search}
+            onChange={handleSearch}
+            placeholder="Buscar destino..."
+          />
         </div>
       </div>
 
@@ -85,7 +93,7 @@ export const CatalogPage = () => {
               setCategoria(cat);
               setPage(1);
             }}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors cursor-pointer ${
               categoria === cat
                 ? 'bg-primary-600 text-white'
                 : 'bg-white dark:bg-surface-800 text-text-muted hover:bg-surface-100 dark:hover:bg-surface-700 border border-surface-200 dark:border-surface-700'
@@ -102,7 +110,7 @@ export const CatalogPage = () => {
         </div>
       ) : packages.length === 0 ? (
         <div className="text-center py-20 bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 flex flex-col items-center">
-          <SearchX className="h-12 w-12 text-gray-400 mb-4"/>
+          <SearchX className="h-12 w-12 text-gray-400 mb-4" />
           <p className="text-xl text-text-muted mb-6">
             No se encontraron paquetes con esos filtros.
           </p>
@@ -111,7 +119,7 @@ export const CatalogPage = () => {
               setSearch('');
               setCategoria('Todas');
             }}
-            className="bg-primary-600 text-white px-4 py-2 rounded-md font-medium hover:bg-primary-700 transition-colors"
+            className="bg-primary-600 text-white px-4 py-2 rounded-md font-medium hover:bg-primary-700 transition-colors cursor-pointer"
           >
             Limpiar filtros
           </button>
@@ -128,27 +136,11 @@ export const CatalogPage = () => {
             ))}
           </div>
 
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-4 mt-8">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="px-4 py-2 bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-lg disabled:opacity-50 text-text-main dark:text-white hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors"
-              >
-                Anterior
-              </button>
-              <span className="text-text-muted font-medium">
-                Página {page} de {totalPages}
-              </span>
-              <button
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                className="px-4 py-2 bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-lg disabled:opacity-50 text-text-main dark:text-white hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors"
-              >
-                Siguiente
-              </button>
-            </div>
-          )}
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
         </>
       )}
     </div>
