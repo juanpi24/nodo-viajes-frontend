@@ -14,7 +14,11 @@ import {
   Menu,
   X,
   User,
+  LayoutGrid,
+  ShoppingBag,
   Package,
+  ClipboardList,
+  Users,
 } from 'lucide-react';
 
 export const Navbar = () => {
@@ -49,33 +53,42 @@ export const Navbar = () => {
         {/* Navegación Desktop */}
         <nav className="hidden md:flex items-center gap-6">
           <NavLink to="/" className={activeStyle}>
-            Catálogo
+            <span className="flex items-center gap-1.5">
+              <LayoutGrid className="w-4 h-4" /> Catálogo
+            </span>
           </NavLink>
 
-          {/* ADMIN DESKTOP */}
+          {/* Nav de Admin */}
           {user?.rol === 'admin' && (
             <>
               <NavLink to="/admin/packages" className={activeStyle}>
-                Paquetes
+                <span className="flex items-center gap-1.5">
+                  <Package className="w-4 h-4" /> Paquetes
+                </span>
               </NavLink>
               <NavLink to="/admin/orders" className={activeStyle}>
-                Órdenes
+                <span className="flex items-center gap-1.5">
+                  <ClipboardList className="w-4 h-4" /> Órdenes
+                </span>
               </NavLink>
               <NavLink to="/admin/users" className={activeStyle}>
-                Usuarios
+                <span className="flex items-center gap-1.5">
+                  <Users className="w-4 h-4" /> Usuarios
+                </span>
               </NavLink>
             </>
           )}
 
-          {/* CLIENTE DESKTOP */}
+          {/* Nav de Cliente */}
           {user && user.rol !== 'admin' && (
             <>
               <NavLink to="/mis-compras" className={activeStyle}>
-                Mis Compras
+                <span className="flex items-center gap-1.5">
+                  <ShoppingBag className="w-4 h-4" /> Mis Compras
+                </span>
               </NavLink>
-              <NavLink to="/favoritos" className={activeStyle}></NavLink>
               <NavLink to="/favoritos" className={activeStyle}>
-                <span className="flex items-center gap-1 relative">
+                <span className="flex items-center gap-1.5 relative">
                   <Heart className="w-4 h-4" /> Favoritos
                   {favCount > 0 && (
                     <span className="absolute -top-2 -right-3 bg-danger text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
@@ -176,9 +189,12 @@ export const Navbar = () => {
         <div className="md:hidden border-t border-gray-100 dark:border-surface-700 bg-white dark:bg-surface-800 px-4 pt-3 pb-5 space-y-4 shadow-lg">
           <nav className="flex flex-col space-y-3">
             <NavLink to="/" onClick={closeMenu} className={activeStyle}>
-              Catálogo
+              <span className="flex items-center gap-2">
+                <LayoutGrid className="w-4 h-4" /> Catálogo
+              </span>
             </NavLink>
-            {/* ADMIN MÓVIL */}
+
+            {/* Nav de Admin */}
             {user?.rol === 'admin' && (
               <>
                 <NavLink
@@ -195,19 +211,23 @@ export const Navbar = () => {
                   onClick={closeMenu}
                   className={activeStyle}
                 >
-                  Órdenes
+                  <span className="flex items-center gap-2">
+                    <ClipboardList className="w-4 h-4" /> Órdenes
+                  </span>
                 </NavLink>
                 <NavLink
                   to="/admin/users"
                   onClick={closeMenu}
                   className={activeStyle}
                 >
-                  Usuarios
+                  <span className="flex items-center gap-2">
+                    <Users className="w-4 h-4" /> Usuarios
+                  </span>
                 </NavLink>
               </>
             )}
 
-            {/* CLIENTE MÓVIL */}
+            {/* Nav de Cliente */}
             {user && user.rol !== 'admin' && (
               <>
                 <NavLink
@@ -215,9 +235,10 @@ export const Navbar = () => {
                   onClick={closeMenu}
                   className={activeStyle}
                 >
-                  Mis Compras
+                  <span className="flex items-center gap-2">
+                    <ShoppingBag className="w-4 h-4" /> Mis Compras
+                  </span>
                 </NavLink>
-
                 <NavLink
                   to="/favoritos"
                   onClick={closeMenu}
@@ -235,7 +256,6 @@ export const Navbar = () => {
               </>
             )}
           </nav>
-
           {/* Sección de Auth en Móvil */}
           <div className="pt-3 border-t border-gray-100 dark:border-surface-700">
             {user ? (
