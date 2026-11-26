@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { MapPinOff, ArrowLeft } from 'lucide-react';
+import { MapPinOff, Eraser } from 'lucide-react';
 
 export function NoEncontrado({
   titulo,
@@ -26,14 +26,14 @@ export function NoEncontrado({
           onClick={onVolver}
           className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary-600 text-white font-semibold hover:bg-primary-700 transition-colors cursor-pointer shadow-sm hover:shadow-md"
         >
-          <ArrowLeft className="w-5 h-5" /> {textoBoton}
+          <Eraser className="w-5 h-5" /> {textoBoton}
         </button>
       ) : (
         <Link
           to="/"
           className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary-600 text-white font-semibold hover:bg-primary-700 transition-colors cursor-pointer shadow-sm hover:shadow-md"
         >
-          <ArrowLeft className="w-5 h-5" /> {textoBoton}
+          <Eraser className="w-5 h-5" /> {textoBoton}
         </Link>
       )}
     </div>

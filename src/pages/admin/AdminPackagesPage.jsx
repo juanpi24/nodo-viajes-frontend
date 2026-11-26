@@ -6,8 +6,9 @@ import { toast } from 'react-toastify';
 import { PlusCircle, Edit, Trash2, CloudDownload, Loader2 } from 'lucide-react';
 import { SafeImage } from '../../components/ui/SafeImage';
 import { ConfirmationModal } from '../../components/ui/ConfirmationModal';
-import { SearchBar } from '../../components/ui/SearchBar'; // <-- IMPORT
-import { Pagination } from '../../components/ui/Pagination'; // <-- IMPORT
+import { SearchBar } from '../../components/ui/SearchBar';
+import { Pagination } from '../../components/ui/Pagination';
+import { NoEncontrado } from '../../components/ui/NoEncontrado';
 
 export const AdminPackagesPage = () => {
   const [packages, setPackages] = useState([]);
@@ -142,11 +143,19 @@ export const AdminPackagesPage = () => {
           <tbody>
             {packages.length === 0 && !loading ? (
               <tr>
-                <td
-                  colSpan="6"
-                  className="px-6 py-10 text-center text-text-muted"
-                >
-                  No se encontraron paquetes con esos filtros.
+                <td colSpan="6" className="p-0 border-0">
+                  {/* Reutilizamos el componente */}
+                  <div className="py-10">
+                    <NoEncontrado
+                      titulo="Sin resultados"
+                      mensaje={`No se encontraron paquetes con el término "${search}".`}
+                      textoBoton="Limpiar búsqueda"
+                      onVolver={() => {
+                        setSearch('');
+                        setPage(1);
+                      }}
+                    />
+                  </div>
                 </td>
               </tr>
             ) : (
