@@ -7,6 +7,8 @@ import { useFavorites } from '../context/FavoritesContext';
 import { useCart } from '../context/CartContext';
 import { formatearPrecio } from '../utils/formato';
 import { SafeImage } from '../components/ui/SafeImage';
+import { Cargando } from '../components/ui/Cargando'; // 
+import { NoEncontrado } from '../components/ui/NoEncontrado'; 
 import {
   MapPin,
   Star,
@@ -24,14 +26,15 @@ export const PackageDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { isFavorite, toggleFavorite } = useFavorites(); // <--- Importamos el hook de favoritos
-  const { addToCart, cart } = useCart(); // <-- Importamos la función para agregar al carrito
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const { addToCart, cart } = useCart();
 
-  const [pkg, setPkg] = useState(null); // <--- Estado para el paquete
-  const [weather, setWeather] = useState(null); // <--- Estado para el clima
-  const [loading, setLoading] = useState(true); // <--- Estado para el loading
+  const [pkg, setPkg] = useState(null);
+  const [weather, setWeather] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false); // <-- NUEVO ESTADO DE ERROR
 
-  const isFav = isFavorite(id); // <--- Verificamos si el paquete es favorito
+  const isFav = isFavorite(id);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,17 +42,16 @@ export const PackageDetailPage = () => {
         const data = await packageApi.getById(id);
         setPkg(data);
 
-        // Buscar el clima en paralelo (sin bloquear la vista principal)
         await packageApi.getWeather(id).then(setWeather).catch(console.error);
       } catch {
-        toast.error('No se pudo cargar el paquete');
-        navigate('/');
+        // En lugar de rebotar al usuario, mostramos la pantalla de error
+        setError(true);
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, [id, navigate]);
+  }, [id]);
 
   const handleToggleFavorite = async () => {
     if (!user || user.rol !== 'cliente') {
@@ -64,7 +66,6 @@ export const PackageDetailPage = () => {
     }
   };
 
-  // Función para manejar la adición al carrito
   const handleAddToCart = () => {
     if (!user) {
       toast.info('Iniciá sesión para comprar');
@@ -76,24 +77,27 @@ export const PackageDetailPage = () => {
       return;
     }
 
-    // Agregamos 1 unidad al carrito y mostramos el aviso
     addToCart(pkg, 1);
     toast.success('Agregado al carrito');
   };
 
-  // Calculamos cuántos de este paquete hay en el carrito
+  // Cálculos de carrito
   const itemEnCarrito = cart.find((item) => item.package === id);
   const cantidadEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
-  // Restamos el stock original menos lo que ya está en el carrito
   const stockRestante = pkg ? pkg.stock - cantidadEnCarrito : 0;
 
-  if (loading)
+  // Usamos el componente Cargando
+  if (loading) return <Cargando mensaje="Cargando detalle del paquete..." />;
+
+  // Usamos el componente NoEncontrado si falló la carga o el paquete no existe
+  if (error || !pkg) {
     return (
-      <div className="text-center py-20 text-xl dark:text-white">
-        Cargando detalle...
-      </div>
+      <NoEncontrado
+        titulo="Paquete no encontrado"
+        mensaje="El paquete que estás buscando no existe o fue eliminado del catálogo."
+      />
     );
-  if (!pkg) return null;
+  }
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -189,7 +193,6 @@ export const PackageDetailPage = () => {
               </p>
             </div>
 
-            {/* En móvil ocupa todo el ancho (w-full), en PC se ajusta al contenido (sm:w-auto) */}
             <div className="flex gap-3 w-full sm:w-auto">
               <button
                 onClick={handleToggleFavorite}
@@ -198,7 +201,6 @@ export const PackageDetailPage = () => {
                 <Heart className={`w-6 h-6 ${isFav ? 'fill-current' : ''}`} />
               </button>
 
-              {/* En móvil crece para ocupar el espacio restante (flex-1), en PC vuelve a su tamaño (sm:flex-none) */}
               <button
                 onClick={handleAddToCart}
                 disabled={stockRestante <= 0}

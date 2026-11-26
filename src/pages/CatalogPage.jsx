@@ -2,7 +2,7 @@
 import { packageApi } from '../api/packageApi';
 import { favoriteApi } from '../api/favoriteApi';
 import { PackageCard } from '../components/packages/PackageCard';
-import { SlidersHorizontal } from 'lucide-react';
+import { SlidersHorizontal, SearchX } from 'lucide-react'; 
 import { useAuth } from '../context/AuthContext';
 import { CATEGORIAS } from '../constants/destinos.js';
 import { SearchBar } from '../components/ui/SearchBar';
@@ -10,7 +10,7 @@ import { Pagination } from '../components/ui/Pagination';
 import { useDebounce } from '../hooks/useDebounce';
 import { Cargando } from '../components/ui/Cargando';
 import { MensajeError } from '../components/ui/MensajeError';
-import { NoEncontrado } from '../components/ui/NoEncontrado';
+import { EmptyState } from '../components/ui/EmptyState'; 
 
 export const CatalogPage = () => {
   const { user } = useAuth();
@@ -113,16 +113,20 @@ export const CatalogPage = () => {
           onReintentar={() => setSearch(search)}
         />
       ) : packages.length === 0 ? (
-        <NoEncontrado
-          titulo="Sin resultados"
-          mensaje="No encontramos paquetes con esos filtros. Probá buscando otro destino."
-          textoBoton="Limpiar filtros"
-          onVolver={() => {
-            setSearch('');
-            setCategoria('Todas');
-            setPage(1);
-          }}
-        />
+        // REEMPLAZAMOS NoEncontrado POR EmptyState
+        <div className="bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700">
+          <EmptyState
+            titulo="Sin resultados"
+            mensaje="No encontramos paquetes con esos filtros. Probá buscando otro destino o limpiando la búsqueda."
+            icono={SearchX}
+            textoBoton="Limpiar filtros"
+            onBotonClick={() => {
+              setSearch('');
+              setCategoria('Todas');
+              setPage(1);
+            }}
+          />
+        </div>
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
