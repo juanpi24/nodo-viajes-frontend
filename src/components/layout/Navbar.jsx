@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'; 
+﻿import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useFavorites } from '../../context/FavoritesContext';
@@ -9,11 +9,12 @@ import {
   Sun,
   Moon,
   Plane,
-  Shield,
   Heart,
   ShoppingCart,
-  Menu, 
+  Menu,
   X,
+  User,
+  Package,
 } from 'lucide-react';
 
 export const Navbar = () => {
@@ -51,25 +52,39 @@ export const Navbar = () => {
             Catálogo
           </NavLink>
 
+          {/* ADMIN DESKTOP */}
           {user?.rol === 'admin' && (
-            <NavLink to="/admin" className={activeStyle}>
-              <span className="flex items-center gap-1">
-                <Shield className="w-4 h-4" /> Admin
-              </span>
-            </NavLink>
+            <>
+              <NavLink to="/admin/packages" className={activeStyle}>
+                Paquetes
+              </NavLink>
+              <NavLink to="/admin/orders" className={activeStyle}>
+                Órdenes
+              </NavLink>
+              <NavLink to="/admin/users" className={activeStyle}>
+                Usuarios
+              </NavLink>
+            </>
           )}
 
+          {/* CLIENTE DESKTOP */}
           {user && user.rol !== 'admin' && (
-            <NavLink to="/favoritos" className={activeStyle}>
-              <span className="flex items-center gap-1 relative">
-                <Heart className="w-4 h-4" /> Favoritos
-                {favCount > 0 && (
-                  <span className="absolute -top-2 -right-3 bg-danger text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
-                    {favCount}
-                  </span>
-                )}
-              </span>
-            </NavLink>
+            <>
+              <NavLink to="/mis-compras" className={activeStyle}>
+                Mis Compras
+              </NavLink>
+              <NavLink to="/favoritos" className={activeStyle}></NavLink>
+              <NavLink to="/favoritos" className={activeStyle}>
+                <span className="flex items-center gap-1 relative">
+                  <Heart className="w-4 h-4" /> Favoritos
+                  {favCount > 0 && (
+                    <span className="absolute -top-2 -right-3 bg-danger text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                      {favCount}
+                    </span>
+                  )}
+                </span>
+              </NavLink>
+            </>
           )}
         </nav>
 
@@ -77,10 +92,14 @@ export const Navbar = () => {
         <div className="flex items-center gap-2 sm:gap-4">
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 text-text-muted transition-colors"
+            className="p-2 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 text-text-muted transition-colors cursor-pointer"
             aria-label="Cambiar tema"
           >
-            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            {isDark ? (
+              <Sun className="w-5 h-5" />
+            ) : (
+              <Moon className="w-5 h-5" />
+            )}
           </button>
 
           {/* Icono del carrito (Solo clientes o público) */}
@@ -106,9 +125,15 @@ export const Navbar = () => {
                 <span className="text-sm font-medium">
                   Hola, {user.nombre.split(' ')[0]}
                 </span>
+                <Link
+                  to="/perfil"
+                  className="flex items-center gap-1 text-sm font-medium hover:text-primary-600 transition-colors"
+                >
+                  <User className="w-4 h-4" /> Mi Perfil
+                </Link>
                 <button
                   onClick={logout}
-                  className="flex items-center gap-1 text-sm font-medium text-danger hover:text-red-700 transition-colors"
+                  className="flex items-center gap-1 text-sm font-medium text-danger hover:text-red-700 transition-colors cursor-pointer"
                 >
                   <LogOut className="w-4 h-4" /> Salir
                 </button>
@@ -137,7 +162,11 @@ export const Navbar = () => {
             className="md:hidden p-2 rounded-lg text-text-muted hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
             aria-label="Abrir menú"
           >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
           </button>
         </div>
       </div>
@@ -149,26 +178,61 @@ export const Navbar = () => {
             <NavLink to="/" onClick={closeMenu} className={activeStyle}>
               Catálogo
             </NavLink>
-
+            {/* ADMIN MÓVIL */}
             {user?.rol === 'admin' && (
-              <NavLink to="/admin" onClick={closeMenu} className={activeStyle}>
-                <span className="flex items-center gap-2">
-                  <Shield className="w-4 h-4" /> Admin
-                </span>
-              </NavLink>
+              <>
+                <NavLink
+                  to="/admin/packages"
+                  onClick={closeMenu}
+                  className={activeStyle}
+                >
+                  <span className="flex items-center gap-2">
+                    <Package className="w-4 h-4" /> Paquetes
+                  </span>
+                </NavLink>
+                <NavLink
+                  to="/admin/orders"
+                  onClick={closeMenu}
+                  className={activeStyle}
+                >
+                  Órdenes
+                </NavLink>
+                <NavLink
+                  to="/admin/users"
+                  onClick={closeMenu}
+                  className={activeStyle}
+                >
+                  Usuarios
+                </NavLink>
+              </>
             )}
 
+            {/* CLIENTE MÓVIL */}
             {user && user.rol !== 'admin' && (
-              <NavLink to="/favoritos" onClick={closeMenu} className={activeStyle}>
-                <span className="flex items-center gap-2">
-                  <Heart className="w-4 h-4" /> Favoritos
-                  {favCount > 0 && (
-                    <span className="bg-danger text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                      {favCount}
-                    </span>
-                  )}
-                </span>
-              </NavLink>
+              <>
+                <NavLink
+                  to="/mis-compras"
+                  onClick={closeMenu}
+                  className={activeStyle}
+                >
+                  Mis Compras
+                </NavLink>
+
+                <NavLink
+                  to="/favoritos"
+                  onClick={closeMenu}
+                  className={activeStyle}
+                >
+                  <span className="flex items-center gap-2">
+                    <Heart className="w-4 h-4" /> Favoritos
+                    {favCount > 0 && (
+                      <span className="bg-danger text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                        {favCount}
+                      </span>
+                    )}
+                  </span>
+                </NavLink>
+              </>
             )}
           </nav>
 
@@ -179,12 +243,21 @@ export const Navbar = () => {
                 <span className="text-sm font-medium">
                   Hola, {user.nombre.split(' ')[0]}
                 </span>
+
+                <Link
+                  to="/perfil"
+                  onClick={closeMenu}
+                  className="text-sm font-medium hover:text-primary-600 cursor-pointer"
+                >
+                  Mi Perfil
+                </Link>
+
                 <button
                   onClick={() => {
                     logout();
                     closeMenu();
                   }}
-                  className="flex items-center gap-1 text-sm font-medium text-danger hover:text-red-700"
+                  className="flex items-center gap-1 text-sm font-medium text-danger hover:text-red-700 cursor-pointer"
                 >
                   <LogOut className="w-4 h-4" /> Salir
                 </button>
@@ -194,14 +267,14 @@ export const Navbar = () => {
                 <Link
                   to="/login"
                   onClick={closeMenu}
-                  className="w-full text-center px-4 py-2 text-sm font-medium text-primary-600 border border-primary-600 rounded-lg hover:bg-primary-50 dark:hover:bg-surface-700 transition-colors"
+                  className="w-full text-center px-4 py-2 text-sm font-medium text-primary-600 border border-primary-600 rounded-lg hover:bg-primary-50 dark:hover:bg-surface-700 transition-colors cursor-pointer"
                 >
                   Ingresar
                 </Link>
                 <Link
                   to="/register"
                   onClick={closeMenu}
-                  className="w-full text-center px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors"
+                  className="w-full text-center px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors cursor-pointer"
                 >
                   Registrarse
                 </Link>

@@ -5,15 +5,7 @@ import { PackageCard } from '../components/packages/PackageCard';
 import { Search, SlidersHorizontal, Loader2, SearchX} from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
-
-const CATEGORIAS = [
-  'Todas',
-  'Naturaleza',
-  'Lagos y Glaciares',
-  'Montaña',
-  'Aventura',
-  'Ciudad',
-];
+import { CATEGORIAS } from '../constants/destinos.js';
 
 export const CatalogPage = () => {
   const { user } = useAuth();

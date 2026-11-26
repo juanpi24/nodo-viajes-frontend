@@ -7,6 +7,9 @@ import { FavoritesPage } from '../pages/FavoritesPage';
 import { CartPage } from '../pages/CartPage';
 import { PaymentResultPage } from '../pages/PaymentResultPage';
 import { AdminPackagesPage } from '../pages/admin/AdminPackagesPage';
+import { AdminPackageFormPage } from '../pages/admin/AdminPackageFormPage';
+import { AdminOrdersPage } from '../pages/admin/AdminOrdersPage';
+import { AdminUsersPage } from '../pages/admin/AdminUsersPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { MainLayout } from '../components/layout/MainLayout';
 
@@ -35,6 +38,16 @@ export const AppRoutes = () => {
             element={<Navigate to="/admin/packages" replace />}
           />
           <Route path="/admin/packages" element={<AdminPackagesPage />} />
+          <Route
+            path="/admin/packages/new"
+            element={<AdminPackageFormPage />}
+          />
+          <Route
+            path="/admin/packages/:id/edit"
+            element={<AdminPackageFormPage />}
+          />
+          <Route path="/admin/orders" element={<AdminOrdersPage />} />
+          <Route path="/admin/users" element={<AdminUsersPage />} />
         </Route>
       </Route>
 
