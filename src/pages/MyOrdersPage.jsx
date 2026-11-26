@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axiosInstance';
 import { formatearPrecio } from '../utils/formato';
-import { Loader2, Package, Calendar } from 'lucide-react';
+import { Loader2, Package, Calendar, ShoppingBag } from 'lucide-react'; // <-- Agregamos ShoppingBag
+import { EmptyState } from '../components/ui/EmptyState'; // <-- IMPORT AGREGADO
 
 export const MyOrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -37,10 +38,14 @@ export const MyOrdersPage = () => {
       </h1>
 
       {orders.length === 0 ? (
-        <div className="text-center py-20 bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700">
-          <p className="text-xl text-text-muted">
-            Todavía no realizaste ninguna compra.
-          </p>
+        <div className="bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700">
+          <EmptyState
+            titulo="Todavía no realizaste compras"
+            mensaje="Cuando compres un paquete, vas a poder ver tu historial y los detalles del pago acá."
+            icono={ShoppingBag}
+            textoBoton="Explorar paquetes"
+            linkBoton="/"
+          />
         </div>
       ) : (
         <div className="space-y-4">

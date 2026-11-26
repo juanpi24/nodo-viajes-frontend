@@ -3,12 +3,19 @@ import { Link } from 'react-router-dom';
 import { packageApi } from '../../api/packageApi';
 import { formatearPrecio } from '../../utils/formato';
 import { toast } from 'react-toastify';
-import { PlusCircle, Edit, Trash2, CloudDownload, Loader2 } from 'lucide-react';
+import {
+  PlusCircle,
+  Edit,
+  Trash2,
+  CloudDownload,
+  Loader2,
+  PackageOpen,
+} from 'lucide-react'; // <-- Agregamos PackageOpen
 import { SafeImage } from '../../components/ui/SafeImage';
 import { ConfirmationModal } from '../../components/ui/ConfirmationModal';
 import { SearchBar } from '../../components/ui/SearchBar';
 import { Pagination } from '../../components/ui/Pagination';
-import { NoEncontrado } from '../../components/ui/NoEncontrado';
+import { EmptyState } from '../../components/ui/EmptyState'; // <-- IMPORT AGREGADO
 
 export const AdminPackagesPage = () => {
   const [packages, setPackages] = useState([]);
@@ -43,7 +50,6 @@ export const AdminPackagesPage = () => {
     return () => clearTimeout(timer);
   }, [fetchPackages]);
 
-  // Si busca algo, volvemos a la página 1
   const handleSearch = (value) => {
     setSearch(value);
     setPage(1);
@@ -54,7 +60,6 @@ export const AdminPackagesPage = () => {
     try {
       await packageApi.remove(packageToDelete._id);
       toast.success('Paquete eliminado correctamente');
-      // Recargamos la página actual para mantener la consistencia
       fetchPackages();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Error al eliminar');
@@ -68,7 +73,7 @@ export const AdminPackagesPage = () => {
       toast.success(
         `Importación exitosa: ${res.nuevos} nuevos, ${res.actualizados} actualizados.`,
       );
-      setPage(1); // Volvemos a la página 1 al importar
+      setPage(1);
       fetchPackages();
     } catch {
       toast.error('Error al importar desde la API');
@@ -127,95 +132,109 @@ export const AdminPackagesPage = () => {
         </div>
       </div>
 
-      {/* Tabla */}
-      <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 overflow-x-auto">
-        <table className="w-full text-left text-sm text-text-main dark:text-white">
-          <thead className="text-xs text-text-muted uppercase bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700">
-            <tr>
-              <th className="px-6 py-4 w-16">#</th>
-              <th className="px-6 py-4">Paquete</th>
-              <th className="px-6 py-4">Destino</th>
-              <th className="px-6 py-4">Precio</th>
-              <th className="px-6 py-4">Stock</th>
-              <th className="px-6 py-4 text-right">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {packages.length === 0 && !loading ? (
-              <tr>
-                <td colSpan="6" className="p-0 border-0">
-                  {/* Reutilizamos el componente */}
-                  <div className="py-10">
-                    <NoEncontrado
-                      titulo="Sin resultados"
-                      mensaje={`No se encontraron paquetes con el término "${search}".`}
-                      textoBoton="Limpiar búsqueda"
-                      onVolver={() => {
-                        setSearch('');
-                        setPage(1);
-                      }}
-                    />
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              packages.map((pkg, index) => (
-                <tr
-                  key={pkg._id}
-                  className="border-b border-surface-100 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-700/50"
-                >
-                  <td className="px-6 py-4 font-medium text-text-muted">
-                    {(page - 1) * 8 + index + 1}{' '}
-                    {/* <-- Numeración correcta entre páginas */}
-                  </td>
-                  <td className="px-6 py-4 flex items-center gap-3">
-                    <SafeImage
-                      src={pkg.imagen}
-                      alt={pkg.titulo}
-                      className="w-10 h-10 rounded-md shrink-0"
-                      iconSize="w-4 h-4"
-                      fallbackText=""
-                    />
-                    <span className="font-medium line-clamp-1">
-                      {pkg.titulo}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">{pkg.destino}</td>
-                  <td className="px-6 py-4">{formatearPrecio(pkg.precio)}</td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-bold ${pkg.stock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
-                    >
-                      {pkg.stock}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex justify-end items-center gap-2">
-                      <Link
-                        to={`/admin/packages/${pkg._id}/edit`}
-                        className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors cursor-pointer"
-                        title="Editar"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Link>
-                      <button
-                        onClick={() => setPackageToDelete(pkg)}
-                        className="p-2 text-danger hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors cursor-pointer"
-                        title="Eliminar"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
+      {/* CONDICIÓN DE LISTA VACÍA */}
+      {packages.length === 0 && !loading ? (
+        <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700">
+          {search ? (
+            // Si hay una búsqueda activa y no hay resultados
+            <EmptyState
+              titulo="Sin resultados"
+              mensaje={`No se encontraron paquetes con el término "${search}". Probá con otra palabra.`}
+              icono={PackageOpen}
+              textoBoton="Limpiar búsqueda"
+              onBotonClick={() => {
+                setSearch('');
+                setPage(1);
+              }}
+            />
+          ) : (
+            // Si simplemente no hay paquetes en el sistema
+            <EmptyState
+              titulo="No hay paquetes cargados"
+              mensaje="El catálogo está vacío. Podés crear un paquete manualmente o importarlos desde la API."
+              icono={PackageOpen}
+              textoBoton="Crear primer paquete"
+              linkBoton="/admin/packages/new"
+            />
+          )}
+        </div>
+      ) : (
+        <>
+          {/* Tabla */}
+          <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 overflow-x-auto">
+            <table className="w-full text-left text-sm text-text-main dark:text-white">
+              <thead className="text-xs text-text-muted uppercase bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700">
+                <tr>
+                  <th className="px-6 py-4 w-16">#</th>
+                  <th className="px-6 py-4">Paquete</th>
+                  <th className="px-6 py-4">Destino</th>
+                  <th className="px-6 py-4">Precio</th>
+                  <th className="px-6 py-4">Stock</th>
+                  <th className="px-6 py-4 text-right">Acciones</th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody>
+                {packages.map((pkg, index) => (
+                  <tr
+                    key={pkg._id}
+                    className="border-b border-surface-100 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-700/50"
+                  >
+                    <td className="px-6 py-4 font-medium text-text-muted">
+                      {(page - 1) * 8 + index + 1}
+                    </td>
+                    <td className="px-6 py-4 flex items-center gap-3">
+                      <SafeImage
+                        src={pkg.imagen}
+                        alt={pkg.titulo}
+                        className="w-10 h-10 rounded-md shrink-0"
+                        iconSize="w-4 h-4"
+                        fallbackText=""
+                      />
+                      <span className="font-medium line-clamp-1">
+                        {pkg.titulo}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">{pkg.destino}</td>
+                    <td className="px-6 py-4">{formatearPrecio(pkg.precio)}</td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-bold ${pkg.stock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
+                      >
+                        {pkg.stock}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex justify-end items-center gap-2">
+                        <Link
+                          to={`/admin/packages/${pkg._id}/edit`}
+                          className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors cursor-pointer"
+                          title="Editar"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Link>
+                        <button
+                          onClick={() => setPackageToDelete(pkg)}
+                          className="p-2 text-danger hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors cursor-pointer"
+                          title="Eliminar"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-      {/* Paginación */}
-      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+          {/* Paginación */}
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
+        </>
+      )}
 
       {/* Modal Reutilizable */}
       <ConfirmationModal

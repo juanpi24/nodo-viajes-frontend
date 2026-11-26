@@ -1,7 +1,8 @@
 ﻿import { useFavorites } from '../context/FavoritesContext';
 import { PackageCard } from '../components/packages/PackageCard';
 import { Loader2, HeartOff, Heart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom'; <-- Lo saqué porque el botón ahora lo maneja el EmptyState
+import { EmptyState } from '../components/ui/EmptyState';
 
 export const FavoritesPage = () => {
   // Usamos el contexto global que creamos
@@ -28,17 +29,14 @@ export const FavoritesPage = () => {
       </div>
 
       {favorites.length === 0 ? (
-        <div className="text-center py-20 bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 flex flex-col items-center">
-          <HeartOff className="h-12 w-12 text-gray-400 mb-4"/>
-          <p className="text-xl text-text-muted mb-6">
-            Todavía no guardaste ningún paquete.
-          </p>
-          <Link
-            to="/"
-            className="bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
-          >
-            Explorar paquetes
-          </Link>
+        <div className="bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700">
+          <EmptyState
+            titulo="Todavía no guardaste ningún paquete"
+            mensaje="Explorá el catálogo y guardá tus destinos favoritos para tenerlos siempre a mano."
+            icono={HeartOff}
+            textoBoton="Explorar paquetes"
+            linkBoton="/"
+          />
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
