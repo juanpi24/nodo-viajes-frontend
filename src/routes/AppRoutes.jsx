@@ -60,12 +60,17 @@ export const AppRoutes = () => {
       </Route>
 
       {/* Página no encontrada 404 */}
-        <Route path="*" element={
-          <NoEncontrado 
-            titulo="Página no encontrada" 
-            mensaje="La ruta que estás buscando no existe o fue movida de lugar." 
-          />
-        } />
+      <Route
+        path="*"
+        element={
+          <div className="container mx-auto px-4 py-10">
+            <NoEncontrado
+              titulo="Página no encontrada"
+              mensaje="La ruta que estás buscando no existe, fue movida de lugar o no tenés los permisos necesarios."
+            />
+          </div>
+        }
+      />
     </Routes>
   );
 };
