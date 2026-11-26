@@ -1,8 +1,9 @@
 ﻿import { useState, useEffect } from 'react';
 import api from '../../api/axiosInstance';
 import { formatearPrecio } from '../../utils/formato';
-import { Loader2, Package, Boxes, ClipboardList } from 'lucide-react'; 
+import { Loader2, Package, Boxes, ClipboardList } from 'lucide-react';
 import { EmptyState } from '../../components/ui/EmptyState';
+import { ExportButton } from '../../components/ui/ExportButton';
 
 export const AdminOrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -59,15 +60,33 @@ export const AdminOrdersPage = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-text-main dark:text-white">
-          Órdenes de Compra
-        </h1>
-        <p className="text-text-muted mt-1">Historial de ventas realizadas.</p>
+      {/* HEADER CORREGIDO */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-text-main dark:text-white">
+            Órdenes de Compra
+          </h1>
+          <p className="text-text-muted mt-1">
+            Historial de ventas realizadas.
+          </p>
+        </div>
+
+        <ExportButton
+          data={orders.map((o) => ({
+            ID_Orden: o._id,
+            Cliente: o.user?.nombre || 'Eliminado',
+            Email: o.user?.email || '-',
+            Paquetes: o.items.length,
+            Unidades: o.items.reduce((sum, item) => sum + item.cantidad, 0),
+            Total: o.total,
+            Estado: o.estado,
+            Fecha: new Date(o.createdAt).toLocaleDateString('es-AR'),
+          }))}
+          filename="ordenes-viajesar"
+        />
       </div>
 
       <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 overflow-x-auto">
-      {/* CONDICIÓN AGREGADA PARA LISTA VACÍA */}
         {orders.length === 0 ? (
           <EmptyState
             titulo="No hay órdenes de compra"
@@ -79,9 +98,8 @@ export const AdminOrdersPage = () => {
             <thead className="text-xs text-text-muted uppercase bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700">
               <tr>
                 <th className="px-6 py-4">Cliente</th>
-                <th className="px-6 py-4">Paquetes</th>{' '}
-                {/* <-- NUEVA COLUMNA */}
-                <th className="px-6 py-4">Unidades</th> {/* <-- RENOMBRADA */}
+                <th className="px-6 py-4">Paquetes</th>
+                <th className="px-6 py-4">Unidades</th>
                 <th className="px-6 py-4">Total</th>
                 <th className="px-6 py-4">Estado</th>
                 <th className="px-6 py-4 text-right">Fecha</th>
@@ -143,7 +161,6 @@ export const AdminOrdersPage = () => {
               })}
             </tbody>
 
-            {/* FOOTER DE LA TABLA CON TOTALES */}
             <tfoot className="bg-surface-50 dark:bg-surface-900/80 border-t-2 border-surface-200 dark:border-surface-700">
               <tr>
                 <td className="px-6 py-4 text-right font-bold text-text-main dark:text-white">

@@ -9,10 +9,11 @@ import {
   User as UserIcon,
   PlusCircle,
   Edit,
-  Users, // <-- ÍCONO AGREGADO
+  Users,
 } from 'lucide-react';
 import { ConfirmationModal } from '../../components/ui/ConfirmationModal';
-import { EmptyState } from '../../components/ui/EmptyState'; // <-- IMPORT AGREGADO
+import { EmptyState } from '../../components/ui/EmptyState';
+import { ExportButton } from '../../components/ui/ExportButton';
 
 export const AdminUsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -55,6 +56,7 @@ export const AdminUsersPage = () => {
 
   return (
     <div className="space-y-6">
+      {/* HEADER */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-text-main dark:text-white">
@@ -64,12 +66,25 @@ export const AdminUsersPage = () => {
             Gestión de cuentas de la plataforma.
           </p>
         </div>
-        <Link
-          to="/admin/users/new"
-          className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2 shadow-sm cursor-pointer"
-        >
-          <PlusCircle className="w-4 h-4" /> Nuevo Usuario
-        </Link>
+
+        {/* AGRUPAMOS LOS BOTONES A LA DERECHA */}
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <ExportButton
+            data={users.map((u) => ({
+              Nombre: u.nombre,
+              Email: u.email,
+              Rol: u.rol,
+            }))}
+            filename="usuarios-viajesar"
+          />
+
+          <Link
+            to="/admin/users/new"
+            className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer whitespace-nowrap flex-1 sm:flex-none"
+          >
+            <PlusCircle className="w-4 h-4" /> Nuevo Usuario
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 overflow-x-auto">

@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { packageApi } from '../../api/packageApi';
+import { ExportButton } from '../../components/ui/ExportButton';
 import { formatearPrecio } from '../../utils/formato';
 import { toast } from 'react-toastify';
 import {
@@ -15,7 +16,7 @@ import { SafeImage } from '../../components/ui/SafeImage';
 import { ConfirmationModal } from '../../components/ui/ConfirmationModal';
 import { SearchBar } from '../../components/ui/SearchBar';
 import { Pagination } from '../../components/ui/Pagination';
-import { EmptyState } from '../../components/ui/EmptyState'; // <-- IMPORT AGREGADO
+import { EmptyState } from '../../components/ui/EmptyState';
 
 export const AdminPackagesPage = () => {
   const [packages, setPackages] = useState([]);
@@ -102,14 +103,14 @@ export const AdminPackagesPage = () => {
             Gestioná el catálogo de viajes de ViajesAR.
           </p>
         </div>
-
+        {/*Caja  de busqueda*/}
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
           <SearchBar
             value={search}
             onChange={handleSearch}
             placeholder="Buscar paquete..."
           />
-
+          {/* Botón de importación */}
           <button
             onClick={handleImport}
             disabled={importing}
@@ -122,6 +123,17 @@ export const AdminPackagesPage = () => {
             )}
             Importar API
           </button>
+          {/* Botón de exportación */}
+          <ExportButton
+            data={packages.map((p) => ({
+              Titulo: p.titulo,
+              Destino: p.destino,
+              Categoria: p.categoria,
+              Precio: p.precio,
+              Stock: p.stock,
+            }))}
+            filename="paquetes-viajesar"
+          />
 
           <Link
             to="/admin/packages/new"
@@ -168,6 +180,7 @@ export const AdminPackagesPage = () => {
                   <th className="px-6 py-4 w-16">#</th>
                   <th className="px-6 py-4">Paquete</th>
                   <th className="px-6 py-4">Destino</th>
+                  <th className="px-6 py-4">Categoria</th>
                   <th className="px-6 py-4">Precio</th>
                   <th className="px-6 py-4">Stock</th>
                   <th className="px-6 py-4 text-right">Acciones</th>
@@ -195,6 +208,7 @@ export const AdminPackagesPage = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4">{pkg.destino}</td>
+                    <td className="px-6 py-4">{pkg.categoria}</td>
                     <td className="px-6 py-4">{formatearPrecio(pkg.precio)}</td>
                     <td className="px-6 py-4">
                       <span
