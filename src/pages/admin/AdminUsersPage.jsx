@@ -1,7 +1,15 @@
 ﻿import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../api/axiosInstance';
 import { toast } from 'react-toastify';
-import { Loader2, Trash2, Shield, User as UserIcon } from 'lucide-react';
+import {
+  Loader2,
+  Trash2,
+  Shield,
+  User as UserIcon,
+  PlusCircle,
+  Edit,
+} from 'lucide-react';
 
 export const AdminUsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -43,13 +51,21 @@ export const AdminUsersPage = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-text-main dark:text-white">
-          Usuarios Registrados
-        </h1>
-        <p className="text-text-muted mt-1">
-          Gestión de cuentas de la plataforma.
-        </p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-text-main dark:text-white">
+            Usuarios Registrados
+          </h1>
+          <p className="text-text-muted mt-1">
+            Gestión de cuentas de la plataforma.
+          </p>
+        </div>
+        <Link
+          to="/admin/users/new"
+          className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2 shadow-sm cursor-pointer"
+        >
+          <PlusCircle className="w-4 h-4" /> Nuevo Usuario
+        </Link>
       </div>
 
       <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 overflow-x-auto">
@@ -59,14 +75,14 @@ export const AdminUsersPage = () => {
               <th className="px-6 py-4">Nombre</th>
               <th className="px-6 py-4">Email</th>
               <th className="px-6 py-4">Rol</th>
-              <th className="px-6 py-4 text-right">Acción</th>
+              <th className="px-6 py-4 text-right">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {users.map((u) => (
               <tr
                 key={u._id}
-                className="border-b border-surface-100 dark:border-surface-700"
+                className="border-b border-surface-100 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-700/50"
               >
                 <td className="px-6 py-4 font-medium">{u.nombre}</td>
                 <td className="px-6 py-4">{u.email}</td>
@@ -82,13 +98,23 @@ export const AdminUsersPage = () => {
                     {u.rol.toUpperCase()}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-right">
-                  <button
-                    onClick={() => handleDelete(u._id)}
-                    className="p-2 text-danger hover:bg-red-50 rounded-lg cursor-pointer"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                <td className="px-6 py-4">
+                  <div className="flex justify-end items-center gap-2">
+                    <Link
+                      to={`/admin/users/${u._id}/edit`}
+                      className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors cursor-pointer"
+                      title="Editar"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(u._id)}
+                      className="p-2 text-danger hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors cursor-pointer"
+                      title="Eliminar"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

@@ -6,10 +6,13 @@ import { PackageDetailPage } from '../pages/PackageDetailPage';
 import { FavoritesPage } from '../pages/FavoritesPage';
 import { CartPage } from '../pages/CartPage';
 import { PaymentResultPage } from '../pages/PaymentResultPage';
+import { ProfilePage } from '../pages/ProfilePage';
+import { MyOrdersPage } from '../pages/MyOrdersPage';
 import { AdminPackagesPage } from '../pages/admin/AdminPackagesPage';
 import { AdminPackageFormPage } from '../pages/admin/AdminPackageFormPage';
 import { AdminOrdersPage } from '../pages/admin/AdminOrdersPage';
 import { AdminUsersPage } from '../pages/admin/AdminUsersPage';
+import { AdminUserFormPage } from '../pages/admin/AdminUserFormPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { MainLayout } from '../components/layout/MainLayout';
 
@@ -25,10 +28,12 @@ export const AppRoutes = () => {
         <Route path="/packages/:id" element={<PackageDetailPage />} />
         <Route path="/pago/:status" element={<PaymentResultPage />} />
 
-        {/* Rutas Protegidas (Clientes) */}
+        {/* Rutas de Clientes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/favoritos" element={<FavoritesPage />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/perfil" element={<ProfilePage />} />
+          <Route path="/mis-compras" element={<MyOrdersPage />} />
         </Route>
 
         {/* Rutas de Administrador */}
@@ -48,6 +53,8 @@ export const AppRoutes = () => {
           />
           <Route path="/admin/orders" element={<AdminOrdersPage />} />
           <Route path="/admin/users" element={<AdminUsersPage />} />
+          <Route path="/admin/users/new" element={<AdminUserFormPage />} />
+          <Route path="/admin/users/:id/edit" element={<AdminUserFormPage />} />
         </Route>
       </Route>
 
