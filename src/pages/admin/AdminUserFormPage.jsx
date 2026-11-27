@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useParams, Link } from 'react-router';
 import api from '../../api/axiosInstance';
-import { createUserSchema, updateUserSchema} from '../../schemas/authSchema';
+import { createUserSchema, updateUserSchema } from '../../schemas/authSchema';
 import { toast } from 'react-toastify';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 
@@ -13,17 +13,19 @@ export const AdminUserFormPage = () => {
   const isEditing = !!id;
   const [loading, setLoading] = useState(isEditing);
 
+  // Configuración de react-hook-form
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
   } = useForm({
-// Si estamos editando, usamos el que permite dejar el password vacío
-  resolver: zodResolver(isEditing ? updateUserSchema : createUserSchema),
+    // Si estamos editando, usamos el que permite dejar el password vacío
+    resolver: zodResolver(isEditing ? updateUserSchema : createUserSchema),
     defaultValues: { rol: 'cliente' },
   });
 
+  // Cargar datos del usuario si estamos editando
   useEffect(() => {
     if (isEditing) {
       api
@@ -52,6 +54,9 @@ export const AdminUserFormPage = () => {
         delete payload.password;
       }
 
+      {
+        /* Guardamos el usuario (crear o actualizar según corresponda) */
+      }
       if (isEditing) {
         await api.put(`/users/${id}`, payload);
         toast.success('Usuario actualizado');
@@ -155,20 +160,20 @@ export const AdminUserFormPage = () => {
             </select>
           </div>
 
-          <div className="pt-6 flex justify-end gap-3 border-t border-surface-200 dark:border-surface-700 mt-6">
+          <div className="pt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 border-t border-surface-200 dark:border-surface-700 mt-6">
             <Link
               to="/admin/users"
-              className="px-6 py-2.5 bg-surface-100 hover:bg-surface-200 dark:bg-surface-700 dark:hover:bg-surface-600 text-text-main dark:text-white font-medium rounded-lg transition-colors"
+              className="w-full sm:w-auto px-6 py-2.5 bg-surface-100 hover:bg-surface-200 dark:bg-surface-700 dark:hover:bg-surface-600 text-text-main dark:text-white font-medium rounded-lg transition-colors text-center"
             >
               Cancelar
             </Link>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50"
+              className="w-full sm:w-auto px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer whitespace-nowrap"
             >
-              <Save className="w-4 h-4" />{' '}
-              {isSubmitting ? 'Guardando...' : 'Guardar Usuario'}
+              <Save className="w-4 h-4 shrink-0" />
+              <span>{isSubmitting ? 'Guardando...' : 'Guardar Usuario'}</span>
             </button>
           </div>
         </form>

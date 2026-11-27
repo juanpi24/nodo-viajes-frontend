@@ -8,14 +8,13 @@ import { toast } from 'react-toastify';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { CATEGORIAS } from '../../constants/destinos';
 
-
-
 export const AdminPackageFormPage = () => {
   const { id } = useParams(); // Si hay ID, es edición
   const navigate = useNavigate();
   const isEditing = !!id;
   const [loading, setLoading] = useState(isEditing);
 
+  // Configuración de react-hook-form
   const {
     register,
     handleSubmit,
@@ -26,6 +25,7 @@ export const AdminPackageFormPage = () => {
     defaultValues: { destacado: false, coordenadas: { lat: '', lng: '' } },
   });
 
+  // Cargar datos del paquete si estamos editando
   useEffect(() => {
     if (isEditing) {
       packageApi
@@ -54,7 +54,7 @@ export const AdminPackageFormPage = () => {
       if (!payload.coordenadas?.lat || !payload.coordenadas?.lng) {
         delete payload.coordenadas;
       }
-
+      // Guardamos el paquete (crear o actualizar según corresponda)
       if (isEditing) {
         await packageApi.update(id, payload);
         toast.success('Paquete actualizado');
@@ -88,7 +88,7 @@ export const AdminPackageFormPage = () => {
         <h1 className="text-2xl font-bold text-text-main dark:text-white mb-6">
           {isEditing ? 'Editar Paquete' : 'Crear Nuevo Paquete'}
         </h1>
-
+        {/* Formulario de creación/edición de paquete */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -251,20 +251,20 @@ export const AdminPackageFormPage = () => {
             </label>
           </div>
 
-          <div className="pt-6 flex justify-end gap-3 border-t border-surface-200 dark:border-surface-700 mt-6">
+          <div className="pt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 border-t border-surface-200 dark:border-surface-700 mt-6">
             <Link
               to="/admin/packages"
-              className="px-6 py-2.5 bg-surface-100 hover:bg-surface-200 dark:bg-surface-700 dark:hover:bg-surface-600 text-text-main dark:text-white font-medium rounded-lg transition-colors"
+              className="w-full sm:w-auto px-6 py-2.5 bg-surface-100 hover:bg-surface-200 dark:bg-surface-700 dark:hover:bg-surface-600 text-text-main dark:text-white font-medium rounded-lg transition-colors text-center"
             >
               Cancelar
             </Link>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50"
+              className="w-full sm:w-auto px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer whitespace-nowrap"
             >
-              <Save className="w-4 h-4" />{' '}
-              {isSubmitting ? 'Guardando...' : 'Guardar Paquete'}
+              <Save className="w-4 h-4 shrink-0" />
+              <span>{isSubmitting ? 'Guardando...' : 'Guardar Paquete'}</span>
             </button>
           </div>
         </form>

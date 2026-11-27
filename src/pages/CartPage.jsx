@@ -143,8 +143,8 @@ export const CartPage = () => {
         </ul>
       </div>
 
-      <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 p-6 flex flex-col sm:flex-row justify-between items-center gap-6">
-        <div>
+      <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-center gap-6">
+        <div className="text-center sm:text-left">
           <p className="text-text-muted mb-1">Total a pagar</p>
           <p className="text-3xl font-bold text-primary-600 dark:text-primary-400">
             {formatearPrecio(cartTotal)}
@@ -155,16 +155,18 @@ export const CartPage = () => {
         <button
           onClick={handleCheckout}
           disabled={loading}
-          className="w-full sm:w-auto px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full sm:w-auto px-4 sm:px-8 py-3.5 sm:py-3 bg-primary-600 hover:bg-primary-700 text-white text-sm sm:text-base font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer whitespace-nowrap"
         >
           {loading ? (
             <>
-              <Loader2 className="w-5 h-5 animate-spin" /> Procesando...
+              <Loader2 className="w-5 h-5 animate-spin shrink-0" />
+              <span>Procesando...</span>
             </>
           ) : (
             <>
-              <ShieldCheck className="w-5 h-5" /> Pagar con Mercado Pago{' '}
-              <ArrowRight className="w-5 h-5" />
+              <ShieldCheck className="w-5 h-5 shrink-0" />
+              <span>Pagar con Mercado Pago</span>
+              <ArrowRight className="w-5 h-5 shrink-0" />
             </>
           )}
         </button>

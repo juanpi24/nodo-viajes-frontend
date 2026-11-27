@@ -8,10 +8,11 @@ import { ExportButton } from '../../components/ui/ExportButton';
 export const AdminOrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  // Cargar órdenes al montar el componente
   useEffect(() => {
     let isMounted = true;
 
+    // Función para cargar las órdenes
     const loadData = async () => {
       try {
         const { data } = await api.get('/orders?limit=50');
@@ -45,7 +46,7 @@ export const AdminOrdersPage = () => {
       acc + order.items.reduce((sum, item) => sum + item.cantidad, 0),
     0,
   );
-
+  // Total de ingresos (sumando totales de órdenes)
   const totalRevenue = approvedOrders.reduce(
     (acc, order) => acc + order.total,
     0,
@@ -71,6 +72,7 @@ export const AdminOrdersPage = () => {
           </p>
         </div>
 
+        {/* Botón de exportación */}
         <ExportButton
           data={orders.map((o) => ({
             ID_Orden: o._id,
@@ -84,17 +86,20 @@ export const AdminOrdersPage = () => {
           }))}
           filename="ordenes-viajesar"
           sheetName="Órdenes"
+          className="w-full sm:w-auto justify-center"
         />
       </div>
 
       <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 overflow-x-auto">
         {orders.length === 0 ? (
+          //{/* Mostramos un estado vacío si no hay órdenes */}
           <EmptyState
             titulo="No hay órdenes de compra"
             mensaje="Aún no se han realizado ventas en la plataforma. Las compras de los clientes aparecerán acá."
             icono={ClipboardList}
           />
         ) : (
+          //{/* TABLA DE ÓRDENES */}
           <table className="w-full text-left text-sm text-text-main dark:text-white">
             <thead className="text-xs text-text-muted uppercase bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700">
               <tr>
@@ -162,6 +167,7 @@ export const AdminOrdersPage = () => {
               })}
             </tbody>
 
+            {/* FOOTER DE TOTALES */}
             <tfoot className="bg-surface-50 dark:bg-surface-900/80 border-t-2 border-surface-200 dark:border-surface-700">
               <tr>
                 <td className="px-6 py-4 text-right font-bold text-text-main dark:text-white">

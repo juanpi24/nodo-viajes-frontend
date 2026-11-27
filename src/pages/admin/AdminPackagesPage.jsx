@@ -125,7 +125,7 @@ export const AdminPackagesPage = () => {
           </p>
         </div>
         {/* Caja de búsqueda */}
-        <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto items-center">
+        <div className="flex flex-col lg:flex-row gap-3 w-full lg:w-auto items-stretch lg:items-center">
           <SearchBar
             value={search}
             onChange={handleSearch}
@@ -133,33 +133,37 @@ export const AdminPackagesPage = () => {
           />
 
           {/* Botón de exportación a Excel */}
-          <ExportButton
-            onFetchData={handleExportAll}
-            filename="paquetes-viajesar"
-            sheetName="Paquetes"
-            disabled={loading || packages.length === 0}
-          />
+          <div className="grid grid-cols-2 sm:flex gap-2 sm:gap-3 w-full lg:w-auto">
+            <ExportButton
+              onFetchData={handleExportAll}
+              filename="paquetes-viajesar"
+              sheetName="Paquetes"
+              disabled={loading || packages.length === 0}
+              className="w-full sm:w-auto justify-center"
+            />
 
-          {/* Botón de importación */}
-          <button
-            onClick={handleImport}
-            disabled={importing}
-            className="px-4 py-2 border-2 border-primary-600 text-primary-600 dark:border-primary-500 dark:text-primary-400 font-medium rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
-          >
-            {importing ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <CloudDownload className="w-4 h-4" />
-            )}
-            Importar API
-          </button>
+            {/* Botón de importación */}
+            <button
+              onClick={handleImport}
+              disabled={importing}
+              className="w-full sm:w-auto px-3 sm:px-4 py-2 border-2 border-primary-600 text-primary-600 dark:border-primary-500 dark:text-primary-400 text-sm sm:text-base font-medium rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer whitespace-nowrap"
+            >
+              {importing ? (
+                <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+              ) : (
+                <CloudDownload className="w-4 h-4 shrink-0" />
+              )}
+              <span>Importar API</span>
+            </button>
 
-          <Link
-            to="/admin/packages/new"
-            className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer whitespace-nowrap"
-          >
-            <PlusCircle className="w-4 h-4" /> Nuevo Paquete
-          </Link>
+            <Link
+              to="/admin/packages/new"
+              className="col-span-2 sm:col-span-1 w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-primary-600 text-white text-sm sm:text-base font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer whitespace-nowrap"
+            >
+              <PlusCircle className="w-4 h-4 shrink-0" />
+              <span>Nuevo Paquete</span>
+            </Link>
+          </div>
         </div>
       </div>
 

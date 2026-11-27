@@ -20,6 +20,7 @@ export const AdminUsersPage = () => {
   const [loading, setLoading] = useState(true);
   const [userToDelete, setUserToDelete] = useState(null);
 
+  // Cargar usuarios al montar el componente
   useEffect(() => {
     let isMounted = true;
     api
@@ -35,7 +36,7 @@ export const AdminUsersPage = () => {
       isMounted = false;
     };
   }, []);
-
+  // Función para eliminar un usuario
   const handleDelete = async () => {
     if (!userToDelete) return;
     try {
@@ -68,7 +69,8 @@ export const AdminUsersPage = () => {
         </div>
 
         {/* AGRUPAMOS LOS BOTONES A LA DERECHA */}
-        <div className="flex items-center gap-3 w-full sm:w-auto">
+        <div className="grid grid-cols-2 sm:flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+          {/* Botón para exportar usuarios a Excel */}
           <ExportButton
             data={users.map((u) => ({
               Nombre: u.nombre,
@@ -77,13 +79,15 @@ export const AdminUsersPage = () => {
             }))}
             filename="usuarios-viajesar"
             sheetName="Usuarios"
+            className="w-full sm:w-auto justify-center"
           />
 
           <Link
             to="/admin/users/new"
-            className="px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer whitespace-nowrap flex-1 sm:flex-none"
+            className="w-full sm:w-auto px-3 sm:px-4 py-2 border-2 border-transparent bg-primary-600 text-white text-sm sm:text-base font-medium rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-1.5 sm:gap-2 shadow-sm cursor-pointer whitespace-nowrap"
           >
-            <PlusCircle className="w-4 h-4" /> Nuevo Usuario
+            <PlusCircle className="w-4 h-4 shrink-0" />
+            <span>Nuevo Usuario</span>
           </Link>
         </div>
       </div>
@@ -91,6 +95,7 @@ export const AdminUsersPage = () => {
       <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 overflow-x-auto">
         {/* CONDICIÓN AGREGADA PARA LISTA VACÍA */}
         {users.length === 0 ? (
+          //{/* Mostramos un estado vacío si no hay usuarios */}
           <EmptyState
             titulo="No hay usuarios registrados"
             mensaje="Aún no hay cuentas creadas en la plataforma. Podés crear una nueva para empezar."
@@ -150,7 +155,7 @@ export const AdminUsersPage = () => {
           </table>
         )}
       </div>
-
+      {/* Modal de confirmación para eliminar usuario*/}
       <ConfirmationModal
         abierto={!!userToDelete}
         onCerrar={() => setUserToDelete(null)}
