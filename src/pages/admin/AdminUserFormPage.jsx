@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router';
 import api from '../../api/axiosInstance';
 import { createUserSchema, updateUserSchema} from '../../schemas/authSchema';
 import { toast } from 'react-toastify';

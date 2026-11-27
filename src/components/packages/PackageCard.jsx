@@ -1,5 +1,5 @@
 ﻿import { MapPin, Star, Heart } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../../context/AuthContext';
 import { useFavorites } from '../../context/FavoritesContext';
 import { toast } from 'react-toastify';

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link } from 'react-router';
 import { orderApi } from '../api/orderApi';
 import { CheckCircle2, XCircle, Loader2, ArrowRight } from 'lucide-react';
 

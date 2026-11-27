@@ -1,7 +1,7 @@
 ﻿import { useFavorites } from '../context/FavoritesContext';
 import { PackageCard } from '../components/packages/PackageCard';
 import { Loader2, HeartOff, Heart } from 'lucide-react';
-// import { Link } from 'react-router-dom'; <-- Lo saqué porque el botón ahora lo maneja el EmptyState
+// import { Link } from 'react-router'; <-- Lo saqué porque el botón ahora lo maneja el EmptyState
 import { EmptyState } from '../components/ui/EmptyState';
 
 export const FavoritesPage = () => {

@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { packageApi } from '../../api/packageApi';
 import { formatearPrecio } from '../../utils/formato';
 import { toast } from 'react-toastify';

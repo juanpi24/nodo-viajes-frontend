@@ -1,6 +1,6 @@
 import { useAuth } from '../context/AuthContext';
 import { User, Mail, Shield, Heart, ShoppingBag } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 export const ProfilePage = () => {
   const { user } = useAuth();

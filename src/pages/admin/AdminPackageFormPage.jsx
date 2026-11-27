@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router';
 import { packageApi } from '../../api/packageApi';
 import { packageSchema } from '../../schemas/packageSchema';
 import { toast } from 'react-toastify';
