@@ -76,6 +76,7 @@ export const AdminUsersPage = () => {
               Rol: u.rol,
             }))}
             filename="usuarios-viajesar"
+            sheetName="Usuarios"
           />
 
           <Link

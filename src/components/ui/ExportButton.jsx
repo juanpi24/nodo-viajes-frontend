@@ -17,7 +17,7 @@ export function ExportButton({
   data,
   onFetchData,
   filename,
-  sheetName = 'Datos',
+  sheetName,
   label = 'Exportar Excel',
   disabled = false,
 }) {

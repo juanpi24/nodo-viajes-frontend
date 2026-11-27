@@ -83,6 +83,7 @@ export const AdminOrdersPage = () => {
             Fecha: new Date(o.createdAt).toLocaleDateString('es-AR'),
           }))}
           filename="ordenes-viajesar"
+          sheetName="Órdenes"
         />
       </div>
 
