@@ -1,7 +1,6 @@
 ﻿import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { packageApi } from '../../api/packageApi';
-import { ExportButton } from '../../components/ui/ExportButton';
 import { formatearPrecio } from '../../utils/formato';
 import { toast } from 'react-toastify';
 import {
@@ -11,31 +10,37 @@ import {
   CloudDownload,
   Loader2,
   PackageOpen,
-} from 'lucide-react'; // <-- Agregamos PackageOpen
+} from 'lucide-react';
 import { SafeImage } from '../../components/ui/SafeImage';
 import { ConfirmationModal } from '../../components/ui/ConfirmationModal';
 import { SearchBar } from '../../components/ui/SearchBar';
 import { Pagination } from '../../components/ui/Pagination';
 import { EmptyState } from '../../components/ui/EmptyState';
+import { ExportButton } from '../../components/ui/ExportButton';
+
+const PAGE_SIZE = 8;
 
 export const AdminPackagesPage = () => {
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [importing, setImporting] = useState(false);
   const [packageToDelete, setPackageToDelete] = useState(null);
-
   // Estados de búsqueda y paginación
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  // Total real de paquetes (null si la API no lo informa)
+  const [total, setTotal] = useState(null);
 
   // Función de carga con parámetros
   const fetchPackages = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await packageApi.getAll({ page, limit: 8, search });
+      const res = await packageApi.getAll({ page, limit: PAGE_SIZE, search });
       setPackages(res.data);
       setTotalPages(res.meta.totalPages);
+      // total puede ser null si la API no lo informa, por eso usamos ?? null
+      setTotal(res.meta.total ?? null);
     } catch {
       toast.error('Error al cargar paquetes');
     } finally {
@@ -83,6 +88,22 @@ export const AdminPackagesPage = () => {
     }
   };
 
+  // Exporta todos los paquetes (sin paginación) o los filtrados por búsqueda.
+  // Si falla, el error sube hasta ExportButton, que muestra un único toast.
+  const handleExportAll = async () => {
+    // Verificá que el backend acepte este límite (sin tope menor a 1000)
+    const res = await packageApi.getAll({ limit: 1000, search });
+    return res.data.map((p) => ({
+      Titulo: p.titulo,
+      Destino: p.destino,
+      Categoria: p.categoria,
+      Precio: p.precio,
+      Stock: p.stock,
+      Destacado: p.destacado ? 'Sí' : 'No',
+    }));
+  };
+
+  // Si estamos cargando y no hay paquetes, mostramos un loader centralizado
   if (loading && packages.length === 0) {
     return (
       <div className="flex justify-center py-20">
@@ -103,13 +124,22 @@ export const AdminPackagesPage = () => {
             Gestioná el catálogo de viajes de ViajesAR.
           </p>
         </div>
-        {/*Caja  de busqueda*/}
-        <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+        {/* Caja de búsqueda */}
+        <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto items-center">
           <SearchBar
             value={search}
             onChange={handleSearch}
             placeholder="Buscar paquete..."
           />
+
+          {/* Botón de exportación a Excel */}
+          <ExportButton
+            onFetchData={handleExportAll}
+            filename="paquetes-viajesar"
+            sheetName="Paquetes"
+            disabled={loading || packages.length === 0}
+          />
+
           {/* Botón de importación */}
           <button
             onClick={handleImport}
@@ -123,17 +153,6 @@ export const AdminPackagesPage = () => {
             )}
             Importar API
           </button>
-          {/* Botón de exportación */}
-          <ExportButton
-            data={packages.map((p) => ({
-              Titulo: p.titulo,
-              Destino: p.destino,
-              Categoria: p.categoria,
-              Precio: p.precio,
-              Stock: p.stock,
-            }))}
-            filename="paquetes-viajesar"
-          />
 
           <Link
             to="/admin/packages/new"
@@ -144,7 +163,7 @@ export const AdminPackagesPage = () => {
         </div>
       </div>
 
-      {/* CONDICIÓN DE LISTA VACÍA */}
+      {/* Condición para mostrar estado vacío */}
       {packages.length === 0 && !loading ? (
         <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700">
           {search ? (
@@ -172,7 +191,16 @@ export const AdminPackagesPage = () => {
         </div>
       ) : (
         <>
-          {/* Tabla */}
+          {/* Total de paquetes */}
+          {total !== null && (
+            <div className="flex justify-end mb-2">
+              <span className="text-sm text-text-muted">
+                Total de paquetes: {total}
+              </span>
+            </div>
+          )}
+
+          {/* Tabla de paquetes */}
           <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 overflow-x-auto">
             <table className="w-full text-left text-sm text-text-main dark:text-white">
               <thead className="text-xs text-text-muted uppercase bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700">
@@ -193,7 +221,7 @@ export const AdminPackagesPage = () => {
                     className="border-b border-surface-100 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-700/50"
                   >
                     <td className="px-6 py-4 font-medium text-text-muted">
-                      {(page - 1) * 8 + index + 1}
+                      {(page - 1) * PAGE_SIZE + index + 1}
                     </td>
                     <td className="px-6 py-4 flex items-center gap-3">
                       <SafeImage
