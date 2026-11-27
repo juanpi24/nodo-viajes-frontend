@@ -78,9 +78,9 @@ export const MyOrdersPage = () => {
               </div>
 
               <div className="space-y-3">
-                {order.items.map((item) => (
+                {order.items.map((item, index) => (
                   <div
-                    key={item._id}
+                    key={item._id || item.package?._id || index}
                     className="flex justify-between items-center text-sm"
                   >
                     <div className="flex items-center gap-2">
