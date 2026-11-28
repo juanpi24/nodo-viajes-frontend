@@ -4,19 +4,27 @@ import { formatearPrecio } from '../../utils/formato';
 import { Loader2, Package, Boxes, ClipboardList } from 'lucide-react';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { ExportButton } from '../../components/ui/ExportButton';
+import { Pagination } from '../../components/ui/Pagination';
 
 export const AdminOrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  // Cargar órdenes al montar el componente
+
+  // Estado para la paginación
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  // Cargar órdenes al montar el componente o al cambiar de página
   useEffect(() => {
     let isMounted = true;
-
-    // Función para cargar las órdenes
+    // Función para cargar datos de órdenes
     const loadData = async () => {
       try {
-        const { data } = await api.get('/orders?limit=50');
-        if (isMounted) setOrders(data.data);
+        const { data } = await api.get(`/orders?page=${page}&limit=10`);
+        if (isMounted) {
+          setOrders(data.data);
+          setTotalPages(data.meta.totalPages);
+        }
       } catch (error) {
         if (isMounted) console.error('Error al cargar órdenes', error);
       } finally {
@@ -29,30 +37,30 @@ export const AdminOrdersPage = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [page]); // <-- Dependencia de página
 
-  // CÁLCULOS DE TOTALES (Solo contamos las órdenes aprobadas)
+  // CÁLCULOS DE TOTALES (Solo contamos las órdenes aprobadas de la página actual)
   const approvedOrders = orders.filter((o) => o.estado === 'approved');
 
-  // Total de paquetes distintos
+  // Total de paquetes de las órdenes aprobadas
   const totalPackages = approvedOrders.reduce(
     (acc, order) => acc + order.items.length,
     0,
   );
-
-  // Total de unidades (sumando cantidades)
+  //Total de unidades de las órdenes aprobadas
   const totalItems = approvedOrders.reduce(
     (acc, order) =>
       acc + order.items.reduce((sum, item) => sum + item.cantidad, 0),
     0,
   );
-  // Total de ingresos (sumando totales de órdenes)
+  //Total de ingresos de las órdenes aprobadas
   const totalRevenue = approvedOrders.reduce(
     (acc, order) => acc + order.total,
     0,
   );
 
-  if (loading)
+  // Evitamos que la tabla desaparezca al cambiar de página
+  if (loading && orders.length === 0)
     return (
       <div className="flex justify-center py-20">
         <Loader2 className="w-10 h-10 animate-spin text-primary-500" />
@@ -92,14 +100,14 @@ export const AdminOrdersPage = () => {
 
       <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 overflow-x-auto">
         {orders.length === 0 ? (
-          //{/* Mostramos un estado vacío si no hay órdenes */}
+          // Mensaje de estado vacío si no hay órdenes
           <EmptyState
             titulo="No hay órdenes de compra"
             mensaje="Aún no se han realizado ventas en la plataforma. Las compras de los clientes aparecerán acá."
             icono={ClipboardList}
           />
         ) : (
-          //{/* TABLA DE ÓRDENES */}
+          // Tabla de órdenes
           <table className="w-full text-left text-sm text-text-main dark:text-white">
             <thead className="text-xs text-text-muted uppercase bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700">
               <tr>
@@ -153,7 +161,9 @@ export const AdminOrdersPage = () => {
                             ? 'bg-green-100 text-green-700'
                             : order.estado === 'pending'
                               ? 'bg-yellow-100 text-yellow-700'
-                              : 'bg-red-100 text-red-700'
+                              : order.estado === 'cancelled'
+                                ? 'bg-gray-200 text-gray-700'
+                                : 'bg-red-100 text-red-700'
                         }`}
                       >
                         {order.estado.toUpperCase()}
@@ -167,7 +177,7 @@ export const AdminOrdersPage = () => {
               })}
             </tbody>
 
-            {/* FOOTER DE TOTALES */}
+            {/* Footer Totales */}
             <tfoot className="bg-surface-50 dark:bg-surface-900/80 border-t-2 border-surface-200 dark:border-surface-700">
               <tr>
                 <td className="px-6 py-4 text-right font-bold text-text-main dark:text-white">
@@ -188,6 +198,9 @@ export const AdminOrdersPage = () => {
           </table>
         )}
       </div>
+
+      {/* Paginación */}
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );
 };
