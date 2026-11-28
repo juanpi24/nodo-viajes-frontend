@@ -1,157 +1,358 @@
-# 🛫 ViajesAR - Frontend (Entrega Parcial)
+# 🛫 ViajesAR - Frontend
 
-Frontend de la plataforma de venta de paquetes turísticos **ViajesAR**. Desarrollado con **React**, **Vite** y **Tailwind CSS**, consume la API REST del backend y permite pagar con **Mercado Pago** (modo prueba).
+![React](https://img.shields.io/badge/React-19-61dafb)
+![Vite](https://img.shields.io/badge/Vite-8-646cff)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38bdf8)
+![Estado](https://img.shields.io/badge/estado-final-22c55e)
 
-> 🚧 **Estado:** versión parcial para evaluación. El panel de administración (CRUD de paquetes) está en desarrollo.
+Frontend de la plataforma turística **ViajesAR**. Permite explorar paquetes, consultar el clima de los destinos, registrarse e iniciar sesión, mantener favoritos y un carrito, completar compras con Mercado Pago y consultar el historial de órdenes. También ofrece un panel administrativo para gestionar paquetes, usuarios y ventas.
 
----
+## 🌐 Enlaces del proyecto
 
-## 🌐 Enlaces del Proyecto
+- Frontend: https://viajesar.netlify.app
+- Backend: https://nodo-viajes-backend.onrender.com
+- Repositorio frontend: https://github.com/juanpi24/nodo-viajes-frontend
+- Repositorio backend: https://github.com/juanpi24/nodo-viajes-backend
 
-* **Frontend (Netlify):** [https://viajesar.netlify.app](https://viajesar.netlify.app)
-* **Backend (Render):** [https://nodo-viajes-backend.onrender.com](https://nodo-viajes-backend.onrender.com)
-* **Repositorio del backend:** [https://github.com/juanpi24/nodo-viajes-backend](https://github.com/juanpi24/nodo-viajes-backend)
+> El backend está alojado en el plan gratuito de Render. Puede tardar entre 30 y 50 segundos en responder después de estar inactivo.
 
-> ⏳ **Nota:** el backend está en el plan gratuito de Render, por lo que puede tardar unos **30-50 segundos** en "despertar" en la primera petición.
+## 🧰 Stack tecnológico
 
----
+- React 19
+- Vite 8
+- React Router 8
+- Tailwind CSS 4
+- Axios
+- React Hook Form
+- Zod y `@hookform/resolvers`
+- React Toastify
+- Lucide React
+- SheetJS / XLSX
+- ESLint
+- Mercado Pago, en modo de prueba
+- Open-Meteo para consultar el clima
 
-## 🔑 Credenciales de Prueba
+## 📋 Requisitos
 
-**👑 Rol Administrador**
+- Node.js 20 o superior recomendado
+- npm 10 o superior recomendado
+- Backend de ViajesAR disponible localmente o en Render
+- Navegador moderno
 
-| Dato | Valor |
-|------|-------|
+## ✨ Funcionalidades
+
+### 👤 Cliente
+
+- Registro e inicio de sesión.
+- Catálogo público con búsqueda y paginación.
+- Página de detalle de cada paquete.
+- Consulta del clima del destino.
+- Lista de paquetes favoritos.
+- Carrito de compras persistente.
+- Creación de órdenes y redirección a Mercado Pago.
+- Verificación del pago al volver desde Mercado Pago.
+- Historial y cancelación de órdenes pendientes.
+- Perfil del usuario.
+- Tema claro y oscuro.
+
+### 🛡️ Administrador
+
+- CRUD de paquetes.
+- Importación de paquetes desde la API externa configurada por el backend.
+- CRUD de usuarios y asignación de roles.
+- Consulta de todas las órdenes.
+- Exportación de paquetes, usuarios y órdenes a Excel.
+- Paginación y búsqueda de paquetes.
+
+## 🗂️ Estructura del proyecto
+
+```text
+nodo-viajes-frontend/
+├── public/
+│   ├── _redirects
+│   ├── favicon.png
+│   ├── favicon.svg
+│   └── logo.png
+├── src/
+│   ├── api/
+│   │   ├── authApi.js
+│   │   ├── axiosInstance.js
+│   │   ├── favoriteApi.js
+│   │   ├── orderApi.js
+│   │   └── packageApi.js
+│   ├── components/
+│   │   ├── layout/
+│   │   ├── packages/
+│   │   └── ui/
+│   ├── constants/
+│   ├── context/
+│   │   ├── AuthContext.jsx
+│   │   ├── CartContext.jsx
+│   │   ├── FavoritesContext.jsx
+│   │   └── ThemeContext.jsx
+│   ├── hooks/
+│   ├── pages/
+│   │   ├── admin/
+│   │   └── páginas públicas y de usuario
+│   ├── routes/
+│   │   ├── AppRoutes.jsx
+│   │   └── ProtectedRoute.jsx
+│   ├── schemas/
+│   ├── utils/
+│   ├── App.jsx
+│   ├── index.css
+│   └── main.jsx
+├── .env.example
+├── eslint.config.js
+├── index.html
+├── package.json
+└── vite.config.js
+```
+
+## 🔐 Variables de entorno
+
+Crear el archivo `.env` desde la plantilla incluida:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+En Linux o macOS:
+
+```bash
+cp .env.example .env
+```
+
+Contenido de `.env` para desarrollo:
+
+```env
+VITE_API_URL=http://localhost:3000/api
+```
+
+Contenido para producción:
+
+```env
+VITE_API_URL=https://nodo-viajes-backend.onrender.com/api
+```
+
+Si `VITE_API_URL` no está definida, el cliente utiliza `http://localhost:3000/api` como valor predeterminado.
+
+## 🚀 Instalación local
+
+### 1️⃣ Clonar el repositorio
+
+```bash
+git clone https://github.com/juanpi24/nodo-viajes-frontend.git
+cd nodo-viajes-frontend
+```
+
+### 2️⃣ Instalar dependencias
+
+```bash
+npm install
+```
+
+### 3️⃣ Configurar el entorno
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Modificar `VITE_API_URL` si el backend no utiliza `http://localhost:3000/api`.
+
+### 4️⃣ Levantar el backend
+
+Levantar el repositorio backend en otra terminal:
+
+```bash
+cd ../nodo-viajes-backend
+npm install
+npm run dev
+```
+
+La API puede utilizar también el despliegue público de Render.
+
+### 5️⃣ Ejecutar el frontend
+
+```bash
+npm run dev
+```
+
+Abrir http://localhost:5173.
+
+## 📜 Scripts disponibles
+
+| Comando | Descripción |
+|---|---|
+| `npm run dev` | Inicia el servidor de desarrollo de Vite |
+| `npm run build` | Genera el build de producción en `dist/` |
+| `npm run preview` | Sirve localmente el build generado |
+| `npm run lint` | Ejecuta ESLint sobre el proyecto |
+
+## 🏗️ Build y despliegue
+
+Crear el build de producción:
+
+```bash
+npm run build
+```
+
+Vista previa local:
+
+```bash
+npm run preview
+```
+
+Configuración sugerida para Netlify:
+
+- Build command: `npm run build`
+- Publish directory: `dist`
+- Variable: `VITE_API_URL=https://nodo-viajes-backend.onrender.com/api`
+- El archivo `public/_redirects` permite conservar las rutas de React Router.
+
+## 🧭 Rutas de la aplicación
+
+### 🌍 Públicas
+
+| Ruta | Descripción |
+|---|---|
+| `/` | Catálogo de paquetes |
+| `/packages/:id` | Detalle y clima del paquete |
+| `/login` | Inicio de sesión |
+| `/register` | Registro |
+| `/pago/:status` | Resultado y verificación del pago |
+
+### 🔑 Usuario autenticado
+
+| Ruta | Acceso | Descripción |
+|---|---|---|
+| `/favoritos` | Usuario | Paquetes favoritos |
+| `/cart` | Usuario | Carrito y checkout |
+| `/perfil` | Usuario | Perfil |
+| `/mis-compras` | Usuario | Historial de órdenes |
+
+### 🛡️ Administrador
+
+| Ruta | Acceso | Descripción |
+|---|---|---|
+| `/admin/packages` | Admin | Lista de paquetes |
+| `/admin/packages/new` | Admin | Alta de paquete |
+| `/admin/packages/:id/edit` | Admin | Edición de paquete |
+| `/admin/orders` | Admin | Órdenes realizadas |
+| `/admin/users` | Admin | Lista de usuarios |
+| `/admin/users/new` | Admin | Alta de usuario |
+| `/admin/users/:id/edit` | Admin | Edición de usuario |
+
+Las rutas protegidas leen el usuario y el JWT almacenados por `AuthContext`. Si no existe una sesión válida, redirigen a `/login`. Las rutas administrativas requieren además el rol `admin`.
+
+## 🔌 Consumo de la API
+
+El cliente Axios utilizado por el frontend:
+
+- Configura `VITE_API_URL` como URL base.
+- Envía el JWT almacenado en `localStorage` mediante `Authorization: Bearer <token>`.
+- Elimina la sesión local ante respuestas HTTP `401`.
+- Redirige al usuario a `/login` cuando la sesión expira.
+
+Principales llamadas implementadas:
+
+| Recurso | Métodos consumidos |
+|---|---|
+| Auth | `POST /auth/register`, `POST /auth/login`, `GET /auth/me` |
+| Packages | `GET /packages`, `GET /packages/:id`, `GET /packages/:id/weather`, `POST /packages`, `PUT /packages/:id`, `DELETE /packages/:id`, `POST /packages/import` |
+| Favorites | `GET /favorites`, `POST /favorites/:packageId`, `DELETE /favorites/:packageId` |
+| Orders | `POST /orders`, `GET /orders/:id/verify`, `GET /orders/mis-ordenes`, `POST /orders/:id/cancel`, `GET /orders` |
+| Users | `GET /users`, `GET /users/:id`, `POST /users`, `PUT /users/:id`, `DELETE /users/:id` |
+
+Ejemplo de uso desde el navegador para una petición protegida:
+
+```javascript
+import api from './src/api/axiosInstance';
+
+const favoritos = await api.get('/favorites');
+console.log(favoritos.data);
+```
+
+## 🧪 Credenciales de prueba
+
+Las siguientes cuentas permiten probar el proyecto en el entorno configurado.
+
+### 👑 Administrador
+
+| Campo | Valor |
+|---|---|
 | Email | `admin@nodoviajes.com` |
-| Password | `admin123` |
+| Contraseña | `admin123` |
 
-**👤 Rol Cliente**
+### 🙋 Cliente
 
-Puede registrarse directamente desde la app con un email nuevo, o usar:
+Puede registrarse con un correo nuevo o utilizar:
 
-| Dato | Valor |
-|------|-------|
+| Campo | Valor |
+|---|---|
 | Email | `juan@test.com` |
-| Password | `123456` |
+| Contraseña | `123456` |
 
----
+## 💳 Prueba de Mercado Pago
 
-## 🧪 ¿Qué se puede probar?
+Mercado Pago debe utilizarse en modo prueba. No se realiza ningún cobro real.
 
-### Flujo de Cliente
+### 🛒 Flujo de compra
 
-1. Navegar por el catálogo (búsqueda y filtros).
-2. Ver el detalle de un paquete (incluye clima en tiempo real vía Open-Meteo).
-3. Agregar paquetes a **Favoritos** (contador en el Navbar).
-4. Agregar paquetes al **carrito**.
-5. **Pagar con Mercado Pago** (ver sección siguiente).
-
----
-
-## 🛒 Flujo de Compra y Pago (modo prueba)
-
-> El pago funciona con **credenciales de prueba** de Mercado Pago: **no se cobra dinero real**.
-
-1. Iniciar sesión como **Cliente**.
+1. Iniciar sesión como cliente.
 2. Agregar uno o más paquetes al carrito.
-3. Ir al carrito y presionar **"Pagar con Mercado Pago"**.
-4. Se abre el checkout de Mercado Pago. Se recomienda usar una **ventana de incógnito** para evitar errores por sesiones duplicadas.
-5. Pagar con una de las dos opciones siguientes.
+3. Presionar **Pagar con Mercado Pago**.
+4. Completar el checkout con alguno de los datos de prueba.
+5. Esperar el redireccionamiento hacia `/pago/:status`.
+6. El frontend verificará el pago contra el backend y actualizará la interfaz.
 
-### Opción A: Tarjeta de crédito de prueba
+Se recomienda una ventana de incógnito si existe una sesión previa del comprador de Mercado Pago.
 
-En la pantalla de pago, seleccionar **"Tarjeta de crédito"** y completar:
+### 💳 Tarjeta de crédito de prueba
 
-| Dato | Valor |
-|------|-------|
-| Número de tarjeta | `5031 7557 3453 0604` (Mastercard) |
-| Nombre del titular | `APRO` |
+| Campo | Valor |
+|---|---|
+| Número | `5031 7557 3453 0604` |
+| Marca | Mastercard |
+| Titular | `APRO` |
 | Vencimiento | `11/30` |
 | CVV | `123` |
 | DNI | `12345678` |
 
-> ⚠️ El nombre del titular **define el resultado** del pago. Debe ser exactamente `APRO` (en mayúsculas) para que sea **aprobado**.
-
-**Otros resultados simulados** (cambiando solo el nombre del titular):
+Para probar otros resultados, cambiar únicamente el nombre del titular:
 
 | Titular | Resultado |
-|---------|-----------|
+|---|---|
 | `APRO` | Pago aprobado |
-| `OTHE` | Rechazado por error general |
-| `CONT` | Pendiente de pago |
+| `OTHE` | Pago rechazado por error general |
+| `CONT` | Pago pendiente |
 
-### Opción B: Comprador de prueba (cuenta de Mercado Pago)
+### 🧾 Comprador de prueba
 
-| Dato | Valor |
-|------|-------|
+| Campo | Valor |
+|---|---|
 | Usuario | `TESTUSER5776167015302551916` |
 | Contraseña | `OWa7waQmXN` |
-| Código de verificación | `914156` (solo si Mercado Pago pide verificar por e-mail) |
+| Código de verificación | `914156`, solo si Mercado Pago lo solicita |
 
-> Es una cuenta ficticia de Mercado Pago: no mueve dinero real.
+El usuario anterior pertenece al entorno de pruebas y no corresponde a una cuenta real con movimientos monetarios.
 
-### Después del pago
+## 🤖 Uso de inteligencia artificial
 
-Al finalizar, Mercado Pago redirige de vuelta a la aplicación, donde se **verifica el pago** contra el backend. Si fue aprobado, la orden queda registrada con estado `approved` y se puede ver en el historial de compras del cliente.
+DeepSeek y Claude fueron utilizados como asistentes durante el desarrollo para:
 
----
+- Diseñar componentes y estados de React.
+- Mejorar formularios y validaciones.
+- Integrar el flujo de autenticación y rutas protegidas.
+- Preparar y revisar la integración con Mercado Pago.
+- Depurar manejo de errores y respuesta de la API.
+- Mejorar la arquitectura, legibilidad y documentación.
+- Armar este README y sus instrucciones de uso.
 
-## 🛠️ Tecnologías
+El código generado recibió revisión y pruebas manuales antes de incorporarse al proyecto.
 
-* **React 19** + **Vite**
-* **Tailwind CSS 4**
-* **React Router** (navegación y rutas protegidas)
-* **Axios** (consumo de la API)
-* **React Hook Form** + **Zod** (formularios y validaciones)
-* **React Toastify** (notificaciones)
-* **Lucide React** (íconos)
-* **Mercado Pago** (checkout, modo prueba) y **Open-Meteo** (clima)
+## ✍️ Autor
 
----
+**Juan Pablo Millicay**
 
-## 🚀 Instalación y Ejecución Local
-
-1. Clonar el repositorio:
-
-   ```bash
-   git clone https://github.com/juanpi24/nodo-viajes-frontend.git
-   cd nodo-viajes-frontend
-   ```
-
-2. Instalar dependencias:
-
-   ```bash
-   npm install
-   ```
-
-3. Configurar las variables de entorno (copiar `.env.example` a `.env`):
-
-   ```env
-   VITE_API_URL=http://localhost:3000/api
-   ```
-
-4. Ejecutar en modo desarrollo:
-
-   ```bash
-   npm run dev
-   ```
-
-   La app queda disponible en `http://localhost:5173`.
-
-### Scripts disponibles
-
-| Comando | Descripción |
-|---------|-------------|
-| `npm run dev` | Servidor de desarrollo |
-| `npm run build` | Build de producción |
-| `npm run preview` | Vista previa del build |
-| `npm run lint` | Análisis con ESLint |
-
-> Para ejecutar el proyecto completo en local también hay que levantar el [backend](https://github.com/juanpi24/nodo-viajes-backend).
-
----
-
-## 🗺️ Próximamente
-
-* Panel de administración: CRUD de paquetes y gestión de usuarios y órdenes.
-* README final con la documentación técnica de la arquitectura.
+Proyecto ViajesAR - 2026.
