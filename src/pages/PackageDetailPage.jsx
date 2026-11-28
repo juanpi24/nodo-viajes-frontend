@@ -111,7 +111,7 @@ export const PackageDetailPage = () => {
 
       <div className="bg-white dark:bg-surface-800 rounded-2xl shadow-xl overflow-hidden border border-surface-100 dark:border-surface-700 flex flex-col md:flex-row">
         {/* Imagen izquierda del paquete y etiqueta de destacado */}
-        <div className="md:w-1/2 relative h-72 md:h-auto">
+        <div className="md:w-1/2 relative h-72 md:h-130">
           <SafeImage
             src={pkg.imagen}
             alt={pkg.titulo}
@@ -152,7 +152,7 @@ export const PackageDetailPage = () => {
             <span className="text-text-muted">(24 reseñas)</span>
           </div>
 
-          <p className="text-text-muted mb-8 leading-relaxed grow">
+          <p className="text-text-muted mb-8 leading-relaxed">
             {pkg.descripcion}
           </p>
 
