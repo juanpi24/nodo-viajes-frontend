@@ -7,6 +7,7 @@ export function ConfirmationModal({
   onConfirmar,
   titulo,
   mensaje,
+  textoConfirmar = "Sí, eliminar", 
 }) {
   return (
     <Modal abierto={abierto} onCerrar={onCerrar}>
@@ -34,7 +35,7 @@ export function ConfirmationModal({
             }}
             className="px-4 py-2 text-sm font-medium text-white bg-danger rounded-lg hover:bg-red-600 transition-colors cursor-pointer"
           >
-            Sí, eliminar
+            {textoConfirmar}
           </button>
         </div>
       </div>

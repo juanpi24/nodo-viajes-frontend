@@ -164,6 +164,7 @@ export const MyOrdersPage = () => {
             acción no se puede deshacer.
           </>
         }
+        textoConfirmar="Sí, cancelar"
       />
     </div>
   );
