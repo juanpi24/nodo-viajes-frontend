@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axiosInstance';
 import { formatearPrecio } from '../utils/formato';
-import { Loader2, Package, Calendar, ShoppingBag } from 'lucide-react'; // <-- Agregamos ShoppingBag
-import { EmptyState } from '../components/ui/EmptyState'; // <-- IMPORT AGREGADO
+import { Loader2, Package, Calendar, ShoppingBag, XCircle } from 'lucide-react'; 
+import { EmptyState } from '../components/ui/EmptyState';
+import { ConfirmationModal } from '../components/ui/ConfirmationModal'; 
+import { toast } from 'react-toastify'; 
 
 export const MyOrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // <-- estado para la orden que se quiere cancelar
+  const [orderToCancel, setOrderToCancel] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -23,6 +28,26 @@ export const MyOrdersPage = () => {
       isMounted = false;
     };
   }, []);
+
+  // <-- funcion para manejar la cancelación de la orden
+  const handleCancelOrder = async () => {
+    if (!orderToCancel) return;
+    try {
+      await api.post(`/orders/${orderToCancel._id}/cancel`);
+      toast.success('Orden cancelada correctamente');
+
+      // Actualizamos el estado local de esa orden sin recargar toda la página
+      setOrders(
+        orders.map((o) =>
+          o._id === orderToCancel._id ? { ...o, estado: 'cancelled' } : o,
+        ),
+      );
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || 'Error al cancelar la orden',
+      );
+    }
+  };
 
   if (loading)
     return (
@@ -54,7 +79,7 @@ export const MyOrdersPage = () => {
               key={order._id}
               className="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 p-6"
             >
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-surface-100 dark:border-surface-700 pb-4 mb-4 gap-2">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-surface-100 dark:border-surface-700 pb-4 mb-4 gap-4">
                 <div>
                   <p className="text-sm text-text-muted flex items-center gap-1">
                     <Calendar className="w-4 h-4" />{' '}
@@ -64,17 +89,33 @@ export const MyOrdersPage = () => {
                     Orden: #{order._id.slice(-6).toUpperCase()}
                   </p>
                 </div>
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-bold ${
-                    order.estado === 'approved'
-                      ? 'bg-green-100 text-green-700'
-                      : order.estado === 'pending'
-                        ? 'bg-yellow-100 text-yellow-700'
-                        : 'bg-red-100 text-red-700'
-                  }`}
-                >
-                  {order.estado.toUpperCase()}
-                </span>
+
+                {/* Contenedor de acciones y estado */}
+                <div className="flex items-center gap-3">
+                  {/* Botón de cancelar (Solo si está pendiente) */}
+                  {order.estado === 'pending' && (
+                    <button
+                      onClick={() => setOrderToCancel(order)}
+                      className="text-sm font-medium text-danger hover:text-red-700 transition-colors flex items-center gap-1 cursor-pointer bg-red-50 dark:bg-red-900/20 px-3 py-1.5 rounded-lg"
+                    >
+                      <XCircle className="w-4 h-4" /> Cancelar
+                    </button>
+                  )}
+
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-bold ${
+                      order.estado === 'approved'
+                        ? 'bg-green-100 text-green-700'
+                        : order.estado === 'pending'
+                          ? 'bg-yellow-100 text-yellow-700'
+                          : order.estado === 'cancelled'
+                            ? 'bg-gray-200 text-gray-700'
+                            : 'bg-red-100 text-red-700'
+                    }`}
+                  >
+                    {order.estado.toUpperCase()}
+                  </span>
+                </div>
               </div>
 
               <div className="space-y-3">
@@ -109,6 +150,21 @@ export const MyOrdersPage = () => {
           ))}
         </div>
       )}
+
+      {/* Modal de confirmación de cancelación */}
+      <ConfirmationModal
+        abierto={!!orderToCancel}
+        onCerrar={() => setOrderToCancel(null)}
+        onConfirmar={handleCancelOrder}
+        titulo="¿Cancelar esta orden?"
+        mensaje={
+          <>
+            Estás a punto de cancelar la orden{' '}
+            <strong>#{orderToCancel?._id.slice(-6).toUpperCase()}</strong>. Esta
+            acción no se puede deshacer.
+          </>
+        }
+      />
     </div>
   );
 };
